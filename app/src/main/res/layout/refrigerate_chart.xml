@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/activity_main"
+        android:id="@+id/refrigerator_chart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -14,19 +14,16 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         tools:context="com.cadovnik.homesmartgardner.MainActivity">
-
         <Button
             android:id="@+id/load_file_from_server"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/refrigerator"
             android:background="@color/colorAccent"/>
-
         <com.jjoe64.graphview.GraphView
             android:layout_width="match_parent"
             android:layout_height="300dip"
             android:layout_marginTop="24dp"
             android:id="@+id/graph" />
-
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
