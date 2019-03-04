@@ -18,6 +18,10 @@ import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -121,24 +125,43 @@ public class RefigeratorFragment extends Fragment {
         URL mUrl = null;
         List<String[]> csvLine = new ArrayList<>();
         String[] content = null;
+        String result = "";
         try {
             mUrl = new URL(PATH_TO_SERVER);
         } catch (MalformedURLException e) {
             e.printStackTrace();
-        }
+        };
+
         try {
-            assert mUrl != null;
-            URLConnection connection = mUrl.openConnection();
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line = "";
-            while((line = br.readLine()) != null){
-                content = line.split(",");
-                csvLine.add(content);
+                URLConnection connection = mUrl.openConnection();
+                BufferedReader bReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"), 8);
+                StringBuilder sBuilder = new StringBuilder();
+
+                String line = null;
+                while ((line = bReader.readLine()) != null) {
+                    sBuilder.append(line + "\n");
+                }
+
+                bReader.close();
+                result = sBuilder.toString();
+
+            } catch (Exception e) {
+                Log.e("StringBuilding & BufferedReader", "Error converting result " + e.toString());
             }
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        try {
+            JSONArray jArray = new JSONArray(result);
+            for(int i=0; i < jArray.length(); i++) {
+
+                JSONObject jObject = jArray.getJSONObject(i);
+
+                String name = jObject.getString("name");
+                String tab1_text = jObject.getString("tab1_text");
+                int active = jObject.getInt("active");
+
+            } // End Loop
+        } catch (JSONException e) {
+            Log.e("JSONException", "Error: " + e.toString());
+        } // catch (JSONException e)
         return csvLine;
     }
 }
