@@ -1,23 +1,26 @@
 package com.cadovnik.homesmartgardner;
 
-import android.graphics.Color;
-import android.icu.util.Calendar;
+import android.app.DatePickerDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.ValueDependentColor;
-import com.jjoe64.graphview.series.BarGraphSeries;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,16 +31,22 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 public class RefigeratorFragment extends Fragment {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private GraphView mGraph;
-    private static final String PATH_TO_SERVER = "http://www.cadovnik.fvds.ru:9999/sensors/historical-sensordata";
-
+    private LineChart lineChart;
+    private TableLayout lastedTableLayout = null;
+    private TextView dateFrom = null;
+    private TextView dateTo = null;
+    Calendar dateCFrom =  null;
+    Calendar dateCTo =  null;
+    private static final String ServiceHistDataUrl = "http://www.cadovnik.fvds.ru:9999/sensors/historical-sensordata";
+    private  static  final String ServiceLatestDataUrl =  "http://cadovnik.fvds.ru:9999/sensors/latest-sensordata/";
     public static MainFragment newInstance(int index) {
         MainFragment f = new MainFragment();
 
@@ -67,13 +76,46 @@ public class RefigeratorFragment extends Fragment {
             return null;
         }
         View view = inflater.inflate(R.layout.refrigerate_chart, container, false);
-        mGraph = (GraphView) view.findViewById(R.id.graph);
+        lastedTableLayout = (TableLayout) view.findViewById(R.id.lasted_data_table);
+        lineChart = (LineChart) view.findViewById(R.id.chart);
+        dateFrom = (TextView) view.findViewById(R.id.dateFrom);
+        dateCFrom = Calendar.getInstance();
+        dateCTo = Calendar.getInstance();
+        dateFrom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(v.getContext(), dFrom,
+                        dateCFrom.get(Calendar.YEAR),
+                        dateCFrom.get(Calendar.MONTH),
+                        dateCFrom.get(Calendar.DAY_OF_MONTH))
+                        .show();
+            }
+        });
+
+        dateTo = (TextView) view.findViewById(R.id.dateTo);
+        dateTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(v.getContext(), dTo,
+                        dateCTo.get(Calendar.YEAR),
+                        dateCTo.get(Calendar.MONTH),
+                        dateCTo.get(Calendar.DAY_OF_MONTH))
+                        .show();
+            }
+        });
         Button loadTextButton = (Button)view.findViewById(R.id.load_file_from_server);
         loadTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                RefigeratorFragment.DownloadFilesTask downloadFilesTask = new RefigeratorFragment.DownloadFilesTask();
-                downloadFilesTask.execute();
+                new HostoricalData().execute();
+            }
+        });
+
+        Button loadLasted = (Button)view.findViewById(R.id.get_lasted);
+        loadLasted.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new LastedData().execute();
             }
         });
         return view;
@@ -86,9 +128,46 @@ public class RefigeratorFragment extends Fragment {
         getActivity().setTitle("Refigerator");
     }
 
-    private class DownloadFilesTask extends AsyncTask<URL, Void, JSONArray> {
+    DatePickerDialog.OnDateSetListener dFrom = new DatePickerDialog.OnDateSetListener() {
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            dateCFrom.set(Calendar.YEAR, year);
+            dateCFrom.set(Calendar.MONTH, monthOfYear);
+            dateCFrom.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            setFromDate();
+        }
+    };
+    DatePickerDialog.OnDateSetListener dTo = new DatePickerDialog.OnDateSetListener() {
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            dateCTo.set(Calendar.YEAR, year);
+            dateCTo.set(Calendar.MONTH, monthOfYear);
+            dateCTo.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            setToDate();
+        }
+    };
+    public void setFromDate(){
+        dateFrom.setText(new SimpleDateFormat("MM/dd/yyyy").format(dateCFrom.getTimeInMillis()).toString());
+    }
+
+    public void setToDate(){
+        dateTo.setText(new SimpleDateFormat("MM/dd/yyyy").format(dateCTo.getTimeInMillis()).toString());
+    }
+    private class DateFormatter implements IValueFormatter {
+
+        private SimpleDateFormat mFormat;
+
+        public DateFormatter() {
+            mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm ");
+        }
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            return mFormat.format(value) + " $"; // e.g. append a dollar-sign
+        }
+    }
+
+    private class HostoricalData extends AsyncTask<URL, Void, JSONArray> {
         protected JSONArray doInBackground(URL... urls) {
-            return downloadRemoteTextFileContent();
+            return downloadRemoteTextFileContent(ServiceHistDataUrl  + "?fromtimestamp=" + dateFrom.getText() + "&totimestamp=" + dateTo.getText());
         }
         protected void onPostExecute(JSONArray result) {
             if(result != null){
@@ -96,6 +175,47 @@ public class RefigeratorFragment extends Fragment {
             }
         }
     }
+
+    private  class LastedData extends  AsyncTask<URL, Void, JSONArray>{
+        @Override
+        protected JSONArray doInBackground(URL... urls) {
+            return downloadRemoteTextFileContent(ServiceLatestDataUrl);
+        }
+
+        @Override
+        protected void onPostExecute(JSONArray jsonArray) {
+            if(jsonArray != null){
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    TableRow tableRow = new TableRow(getContext());
+                    tableRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                            TableLayout.LayoutParams.MATCH_PARENT));
+                    try{
+                        JSONObject jObject = jsonArray.getJSONObject(i);
+                        String sensName = jObject.getString("sensorName");
+                        String sensKind = jObject.getString("sensorKind");
+                        JSONArray vals = jObject.getJSONArray("values");
+                        TextView viewSName = new TextView(getContext());
+                        viewSName.setText(sensName);
+                        TextView viewSKind = new TextView(getContext());
+                        viewSKind.setText(sensKind);
+                        TextView viewSValDate = new TextView(getContext());
+                        viewSValDate.setText(new SimpleDateFormat("yy/MM/dd hh:mm:ss ").format(vals.getJSONObject(0).getLong("x")));
+                        TextView viewSVal = new TextView(getContext());
+                        viewSVal.setText(vals.getJSONObject(0).getString("y"));
+                        tableRow.addView(viewSName);
+                        tableRow.addView(viewSKind);
+                        tableRow.addView(viewSValDate);
+                        tableRow.addView(viewSVal);
+                        lastedTableLayout.addView(tableRow, i + 1);
+                    }
+                    catch (JSONException e) {
+                        Log.e("JSONException", "Error: " + e.toString());
+                    }
+                }
+            }
+        }
+    }
+
     private void createLineGraph(JSONArray jArray){
         for (int i = 0; i < jArray.length(); i++) {
 
@@ -106,13 +226,18 @@ public class RefigeratorFragment extends Fragment {
                 String sensKind = jObject.getString("sensorKind");
                 JSONArray vals = jObject.getJSONArray("values");
 
-                DataPoint[] dataPoints = new DataPoint[vals.length()];
+                List<Entry> entries = new ArrayList<Entry>();
+
                 for (int j = 0; i < vals.length(); i++){
                     JSONObject obj = vals.getJSONObject(j);
-                    dataPoints[i] = new DataPoint(new Date( obj.getLong("x")), obj.getDouble("y"));
+                    entries.add(new Entry((float)obj.getDouble("x"), (float)obj.getDouble("y")));
                 }
-                LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dataPoints);
-                mGraph.addSeries(series);
+                LineDataSet dataSet = new LineDataSet(entries, sensKind);
+                dataSet.setValueFormatter(new DateFormatter());
+                dataSet.setLabel(sensName);
+                LineData lineData = new LineData(dataSet);
+                lineChart.setData(lineData);
+                lineChart.invalidate();
 
             } catch (JSONException e) {
                 Log.e("JSONException", "Error: " + e.toString());
@@ -122,28 +247,12 @@ public class RefigeratorFragment extends Fragment {
     } // End Loop
 
     }
-    private void createBarChartGraph(List<String[]> result){
-        DataPoint[] dataPoints = new DataPoint[result.size()];
-        for (int i = 0; i < result.size(); i++){
-            String [] rows = result.get(i);
-            Log.d(TAG, "Output " + Integer.parseInt(rows[0]) + " " + Integer.parseInt(rows[1]));
-            dataPoints[i] = new DataPoint(Integer.parseInt(rows[0]), Integer.parseInt(rows[1]));
-        }
-        BarGraphSeries<DataPoint> series = new BarGraphSeries<DataPoint>(dataPoints);
-        mGraph.addSeries(series);
-        series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
-            @Override
-            public int get(DataPoint data) {
-                return Color.rgb((int) data.getX()*255/4, (int) Math.abs(data.getY()*255/6), 100);
-            }
-        });
-        series.setSpacing(50);
-    }
-    private JSONArray downloadRemoteTextFileContent(){
+
+    private JSONArray downloadRemoteTextFileContent(String reqURL){
         URL mUrl = null;
-        JSONArray jArray = new JSONArray();
+        JSONArray jArray = null;
         try {
-            mUrl = new URL(PATH_TO_SERVER);
+            mUrl = new URL(reqURL);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         };

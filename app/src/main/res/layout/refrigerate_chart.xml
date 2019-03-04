@@ -1,34 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/refrigerator_chart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center"
+        android:gravity="top|center"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         tools:context="com.cadovnik.homesmartgardner.MainActivity">
-        <com.jjoe64.graphview.GraphView
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chart"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/nav_header_height"/>
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="24dp"
-            android:id="@+id/graph" />
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/dateFrom"
+                android:text="DateFrom"
+                android:layout_width="100dp"
+                android:layout_height="24dp" />
+            <TextView
+                android:id="@+id/dateTo"
+                android:text="DateTo"
+                android:layout_width="100dp"
+                android:layout_height="24dp" />
+            <Button
+                android:id="@+id/load_file_from_server"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:text="@string/refrigerator"
+                android:background="@color/colorAccent"/>
+        </LinearLayout>
+        <TableLayout
+            android:id="@+id/lasted_data_table"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TableRow>
+                <TextView
+                    android:id="@+id/sensKind"
+                    android:text="Sensor Kind:"
+                    android:padding="3dip" />
+                <TextView
+                    android:id="@+id/SensName"
+                    android:text="Sensor Name:"
+                    android:padding="3dip" />
+                <TextView
+                    android:id="@+id/valTime"
+                    android:text="Value Time:"
+                    android:padding="3dip" />
+                <TextView
+                    android:id="@+id/val"
+                    android:text="Value:"
+                    android:padding="3dip" />
+            </TableRow>
+
+        </TableLayout>
+
         <Button
-            android:id="@+id/load_file_from_server"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/refrigerator"
+            android:id="@+id/get_lasted"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:text="Get Lasted"
             android:background="@color/colorAccent"/>
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/lasted_values">
-        </GridLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
