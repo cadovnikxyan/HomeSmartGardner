@@ -14,16 +14,21 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         tools:context="com.cadovnik.homesmartgardner.MainActivity">
+        <com.jjoe64.graphview.GraphView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="24dp"
+            android:id="@+id/graph" />
         <Button
             android:id="@+id/load_file_from_server"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/refrigerator"
             android:background="@color/colorAccent"/>
-        <com.jjoe64.graphview.GraphView
+        <GridLayout
             android:layout_width="match_parent"
-            android:layout_height="300dip"
-            android:layout_marginTop="24dp"
-            android:id="@+id/graph" />
+            android:layout_height="match_parent"
+            android:id="@+id/lasted_values">
+        </GridLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

@@ -1,11 +1,12 @@
 package com.cadovnik.homesmartgardner;
 
 import android.graphics.Color;
+import android.icu.util.Calendar;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,13 +24,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class RefigeratorFragment extends Fragment {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -84,25 +86,41 @@ public class RefigeratorFragment extends Fragment {
         getActivity().setTitle("Refigerator");
     }
 
-    private class DownloadFilesTask extends AsyncTask<URL, Void, List<String[]>> {
-        protected List<String[]> doInBackground(URL... urls) {
+    private class DownloadFilesTask extends AsyncTask<URL, Void, JSONArray> {
+        protected JSONArray doInBackground(URL... urls) {
             return downloadRemoteTextFileContent();
         }
-        protected void onPostExecute(List<String[]> result) {
+        protected void onPostExecute(JSONArray result) {
             if(result != null){
                 createLineGraph(result);
             }
         }
     }
-    private void createLineGraph(List<String[]> result){
-        DataPoint[] dataPoints = new DataPoint[result.size()];
-        for (int i = 0; i < result.size(); i++){
-            String [] rows = result.get(i);
-            Log.d(TAG, "Output " + Integer.parseInt(rows[0]) + " " + Integer.parseInt(rows[1]));
-            dataPoints[i] = new DataPoint(Integer.parseInt(rows[0]), Integer.parseInt(rows[1]));
-        }
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dataPoints);
-        mGraph.addSeries(series);
+    private void createLineGraph(JSONArray jArray){
+        for (int i = 0; i < jArray.length(); i++) {
+
+            try
+            {
+                JSONObject jObject = jArray.getJSONObject(i);
+                String sensName = jObject.getString("sensorName");
+                String sensKind = jObject.getString("sensorKind");
+                JSONArray vals = jObject.getJSONArray("values");
+
+                DataPoint[] dataPoints = new DataPoint[vals.length()];
+                for (int j = 0; i < vals.length(); i++){
+                    JSONObject obj = vals.getJSONObject(j);
+                    dataPoints[i] = new DataPoint(new Date( obj.getLong("x")), obj.getDouble("y"));
+                }
+                LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dataPoints);
+                mGraph.addSeries(series);
+
+            } catch (JSONException e) {
+                Log.e("JSONException", "Error: " + e.toString());
+            }
+
+
+    } // End Loop
+
     }
     private void createBarChartGraph(List<String[]> result){
         DataPoint[] dataPoints = new DataPoint[result.size()];
@@ -121,47 +139,32 @@ public class RefigeratorFragment extends Fragment {
         });
         series.setSpacing(50);
     }
-    private List<String[]> downloadRemoteTextFileContent(){
+    private JSONArray downloadRemoteTextFileContent(){
         URL mUrl = null;
-        List<String[]> csvLine = new ArrayList<>();
-        String[] content = null;
-        String result = "";
+        JSONArray jArray = new JSONArray();
         try {
             mUrl = new URL(PATH_TO_SERVER);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         };
-
         try {
-                URLConnection connection = mUrl.openConnection();
-                BufferedReader bReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"), 8);
-                StringBuilder sBuilder = new StringBuilder();
+            URLConnection connection = mUrl.openConnection();
+            BufferedReader bReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"), 8);
+            StringBuilder sBuilder = new StringBuilder();
 
-                String line = null;
-                while ((line = bReader.readLine()) != null) {
-                    sBuilder.append(line + "\n");
-                }
-
-                bReader.close();
-                result = sBuilder.toString();
-
-            } catch (Exception e) {
-                Log.e("StringBuilding & BufferedReader", "Error converting result " + e.toString());
+            String line = null;
+            while ((line = bReader.readLine()) != null) {
+                sBuilder.append(line);
             }
-        try {
-            JSONArray jArray = new JSONArray(result);
-            for(int i=0; i < jArray.length(); i++) {
+            bReader.close();
+            String result = sBuilder.toString();
+            jArray = new JSONArray(result);
 
-                JSONObject jObject = jArray.getJSONObject(i);
-
-                String name = jObject.getString("name");
-                String tab1_text = jObject.getString("tab1_text");
-                int active = jObject.getInt("active");
-
-            } // End Loop
         } catch (JSONException e) {
             Log.e("JSONException", "Error: " + e.toString());
-        } // catch (JSONException e)
-        return csvLine;
+        } catch (Exception e) {
+            Log.e("StringBuilding & BufferedReader", "Error converting result " + e.toString());
+        }
+        return jArray;
     }
 }
