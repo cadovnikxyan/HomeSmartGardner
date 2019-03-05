@@ -75,4 +75,10 @@
             android:text="Get Lasted"
             android:background="@color/colorAccent"/>
     </LinearLayout>
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" />
 </android.support.constraint.ConstraintLayout>

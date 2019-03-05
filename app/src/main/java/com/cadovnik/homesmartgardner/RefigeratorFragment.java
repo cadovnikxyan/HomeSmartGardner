@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -25,24 +26,19 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.github.mikephil.charting.formatter.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -51,7 +47,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,60 +54,42 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
 
 public class RefigeratorFragment extends Fragment {
-    private static final String TAG = MainActivity.class.getSimpleName();
     private static SSLContext context;
-//    private static HostnameVerifier hostnameVerifier;
     private LineChart lineChart;
     private TableLayout lastedTableLayout = null;
     private TextView dateFrom = null;
     private TextView dateTo = null;
+    private ProgressBar spinner = null;
     Calendar dateCFrom =  null;
     Calendar dateCTo =  null;
     private static final String ServiceHistDataUrl = "https://cadovnik.fvds.ru:9999/sensors/historical-sensordata";
     private  static  final String ServiceLatestDataUrl =  "https://cadovnik.fvds.ru:9999/sensors/latest-sensordata/";
     private  static  final String Hostname = "cadovnik.fvds.ru";
     private static final String DateFormat = "MM/dd/yyyy";
-    public static MainFragment newInstance(int index) {
-        MainFragment f = new MainFragment();
-
-        // Supply index input as an argument.
-        Bundle args = new Bundle();
-        args.putInt("index", index);
-        f.setArguments(args);
-
-        return f;
-    }
-
-    public int getShownIndex() {
-        return getArguments().getInt("index", 0);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         if (container == null) {
             return null;
         }
         View view = inflater.inflate(R.layout.refrigerate_chart, container, false);
         trustAllHosts(getActivity().getResources());
-
+        spinner = (ProgressBar)view.findViewById(R.id.progressBar1);
         lastedTableLayout = (TableLayout) view.findViewById(R.id.lasted_data_table);
         lineChart = (LineChart) view.findViewById(R.id.chart);
         dateFrom = (TextView) view.findViewById(R.id.dateFrom);
         dateTo = (TextView) view.findViewById(R.id.dateTo);
-
+        spinner.setVisibility(View.GONE);
         setUpChart();
         setUpDates();
 
@@ -121,6 +98,7 @@ public class RefigeratorFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 new HostoricalData().execute();
+                spinner.setVisibility(View.VISIBLE);
             }
         });
 
@@ -129,6 +107,7 @@ public class RefigeratorFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 new LastedData().execute();
+                spinner.setVisibility(View.VISIBLE);
             }
         });
         loadHistory.callOnClick();
@@ -198,6 +177,7 @@ public class RefigeratorFragment extends Fragment {
             }
         });
     }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -221,6 +201,7 @@ public class RefigeratorFragment extends Fragment {
             setToDate();
         }
     };
+
     public void setFromDate(){
         dateFrom.setText(new SimpleDateFormat(DateFormat).format(dateCFrom.getTimeInMillis()).toString());
     }
@@ -271,11 +252,19 @@ public class RefigeratorFragment extends Fragment {
         @Override
         protected void onPostExecute(JSONArray jsonArray) {
             if(jsonArray != null){
+                View row1 = lastedTableLayout.findViewById(11);
+                if ( row1 != null ) {
+                    lastedTableLayout.removeView(row1);
+                }
+                View row2 = lastedTableLayout.findViewById(12);
+                if ( row2 != null ){
+                    lastedTableLayout.removeView(row2);
+                }
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    TableRow tableRow = new TableRow(getContext());
-                    tableRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
-                            TableLayout.LayoutParams.MATCH_PARENT));
                     try{
+                        TableRow tableRow = new TableRow(getContext());
+                        tableRow.setId(11 + i);
+                        tableRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT));
                         JSONObject jObject = jsonArray.getJSONObject(i);
                         String sensName = jObject.getString("sensorName");
                         String sensKind = jObject.getString("sensorKind");
@@ -285,7 +274,7 @@ public class RefigeratorFragment extends Fragment {
                         TextView viewSKind = new TextView(getContext());
                         viewSKind.setText(sensKind);
                         TextView viewSValDate = new TextView(getContext());
-                        viewSValDate.setText(new SimpleDateFormat("hh:mm:ss ").format(vals.getJSONObject(0).getLong("x")));
+                        viewSValDate.setText(new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).format(new Date(vals.getJSONObject(0).getLong("x"))));
                         TextView viewSVal = new TextView(getContext());
                         viewSVal.setText(vals.getJSONObject(0).getString("y"));
                         tableRow.addView(viewSName);
@@ -296,6 +285,9 @@ public class RefigeratorFragment extends Fragment {
                     }
                     catch (JSONException e) {
                         Log.e("JSONException", "Error: " + e.toString());
+                    }
+                    catch (NullPointerException e){
+                        Log.e(e.getClass().toString(), "Error: " + e.toString());
                     }
                 }
             }
@@ -320,8 +312,8 @@ public class RefigeratorFragment extends Fragment {
                     float y = (float) obj.getDouble("y");
                     entries.add(new Entry(x, y));
                 }
-                LineDataSet dataSet = new LineDataSet(entries, sensKind);
-                dataSet.setLabel(sensName);
+                LineDataSet dataSet = new LineDataSet(entries, sensName);
+                dataSet.setLabel(sensKind);
                 dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
                 dataSet.setColor(ColorTemplate.getHoloBlue());
                 dataSet.setValueTextColor(ColorTemplate.getHoloBlue());
@@ -404,11 +396,20 @@ public class RefigeratorFragment extends Fragment {
             String result = sBuilder.toString();
             jArray = new JSONArray(result);
 
+            getActivity().runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    spinner.setVisibility(View.GONE);
+                }
+            });
         } catch (JSONException e) {
             Log.e("JSONException", "Error: " + e.toString());
         } catch (Exception e) {
             Log.e("StringBuilding & BufferedReader", "Error converting result " + e.toString());
         }
+
+
         return jArray;
     }
 }
