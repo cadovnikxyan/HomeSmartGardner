@@ -1,6 +1,7 @@
 package com.cadovnik.homesmartgardner;
 
 import android.app.DatePickerDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,11 +17,16 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.github.mikephil.charting.formatter.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,10 +38,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class RefigeratorFragment extends Fragment {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -78,6 +88,38 @@ public class RefigeratorFragment extends Fragment {
         View view = inflater.inflate(R.layout.refrigerate_chart, container, false);
         lastedTableLayout = (TableLayout) view.findViewById(R.id.lasted_data_table);
         lineChart = (LineChart) view.findViewById(R.id.chart);
+        lineChart.setDragEnabled(true);
+        lineChart.setScaleEnabled(true);
+        lineChart.setDrawGridBackground(false);
+        lineChart.setHighlightPerDragEnabled(true);
+        lineChart.setBackgroundColor(Color.WHITE);
+        lineChart.setViewPortOffsets(0f, 0f, 0f, 0f);
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE);
+//        xAxis.setTypeface(tfLight);
+        xAxis.setTextSize(10f);
+        xAxis.setTextColor(Color.WHITE);
+        xAxis.setDrawAxisLine(false);
+        xAxis.setDrawGridLines(true);
+        xAxis.setTextColor(Color.rgb(255, 192, 56));
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setGranularity(1f); // one hour
+        xAxis.setValueFormatter(new DateFormatter());
+
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+//        leftAxis.setTypeface(tfLight);
+        leftAxis.setTextColor(ColorTemplate.getHoloBlue());
+        leftAxis.setDrawGridLines(true);
+        leftAxis.setGranularityEnabled(true);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setAxisMaximum(100);
+        leftAxis.setYOffset(-9f);
+        leftAxis.setTextColor(Color.rgb(255, 192, 56));
+
+        YAxis rightAxis = lineChart.getAxisRight();
+        rightAxis.setEnabled(false);
+
         dateFrom = (TextView) view.findViewById(R.id.dateFrom);
         dateCFrom = Calendar.getInstance();
         dateCTo = Calendar.getInstance();
@@ -151,23 +193,32 @@ public class RefigeratorFragment extends Fragment {
     public void setToDate(){
         dateTo.setText(new SimpleDateFormat("MM/dd/yyyy").format(dateCTo.getTimeInMillis()).toString());
     }
-    private class DateFormatter implements IValueFormatter {
+    private class DateFormatter implements IAxisValueFormatter {
 
         private SimpleDateFormat mFormat;
 
         public DateFormatter() {
-            mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm ");
+            mFormat = new SimpleDateFormat("yy-MM-dd hh:mm:ss");
         }
 
         @Override
-        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-            return mFormat.format(value) + " $"; // e.g. append a dollar-sign
+        public String getFormattedValue(float value, AxisBase axis) {
+            return mFormat.format(value);
         }
     }
 
     private class HostoricalData extends AsyncTask<URL, Void, JSONArray> {
         protected JSONArray doInBackground(URL... urls) {
-            return downloadRemoteTextFileContent(ServiceHistDataUrl  + "?fromtimestamp=" + dateFrom.getText() + "&totimestamp=" + dateTo.getText());
+            String timestampFrom = "";
+            String timestampTo = "";
+            try{
+                timestampFrom = String.valueOf(new SimpleDateFormat("MM/dd/yyyy").parse(dateFrom.getText().toString()).getTime());
+                timestampTo = String.valueOf(new SimpleDateFormat("MM/dd/yyyy").parse(dateTo.getText().toString()));
+            }
+            catch (ParseException e) {
+                Log.e("ParseException", "Error: " + e.toString());
+            }
+            return downloadRemoteTextFileContent(ServiceHistDataUrl  + "?fromtimestamp=" + timestampFrom + "&totimestamp=" + timestampTo);
         }
         protected void onPostExecute(JSONArray result) {
             if(result != null){
@@ -216,11 +267,11 @@ public class RefigeratorFragment extends Fragment {
         }
     }
 
-    private void createLineGraph(JSONArray jArray){
-        for (int i = 0; i < jArray.length(); i++) {
-
-            try
-            {
+    private void createLineGraph(JSONArray jArray) {
+        lineChart.clear();
+        try {
+            LineData lineData = new LineData();
+            for (int i = 0; i < jArray.length(); i++) {
                 JSONObject jObject = jArray.getJSONObject(i);
                 String sensName = jObject.getString("sensorName");
                 String sensKind = jObject.getString("sensorKind");
@@ -228,25 +279,33 @@ public class RefigeratorFragment extends Fragment {
 
                 List<Entry> entries = new ArrayList<Entry>();
 
-                for (int j = 0; i < vals.length(); i++){
+                for (int j = 0; j < vals.length(); j++) {
                     JSONObject obj = vals.getJSONObject(j);
-                    entries.add(new Entry((float)obj.getDouble("x"), (float)obj.getDouble("y")));
+                    float x = (float) obj.getDouble("x");
+                    float y = (float) obj.getDouble("y");
+                    entries.add(new Entry(x, y));
                 }
                 LineDataSet dataSet = new LineDataSet(entries, sensKind);
-                dataSet.setValueFormatter(new DateFormatter());
                 dataSet.setLabel(sensName);
-                LineData lineData = new LineData(dataSet);
-                lineChart.setData(lineData);
-                lineChart.invalidate();
-
-            } catch (JSONException e) {
-                Log.e("JSONException", "Error: " + e.toString());
-            }
-
-
-    } // End Loop
-
+                dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+                dataSet.setColor(ColorTemplate.getHoloBlue());
+                dataSet.setValueTextColor(ColorTemplate.getHoloBlue());
+                dataSet.setLineWidth(1.5f);
+                dataSet.setDrawCircles(false);
+                dataSet.setDrawValues(false);
+                dataSet.setFillAlpha(65);
+                dataSet.setFillColor(ColorTemplate.getHoloBlue());
+                dataSet.setHighLightColor(Color.rgb(244, 117, 117));
+                dataSet.setDrawCircleHole(false);
+                lineData.addDataSet(dataSet);
+                }
+            lineChart.setData(lineData);
+            lineChart.invalidate();
+        } catch(JSONException e){
+            Log.e("JSONException", "Error: " + e.toString());
+        }
     }
+
 
     private JSONArray downloadRemoteTextFileContent(String reqURL){
         URL mUrl = null;
