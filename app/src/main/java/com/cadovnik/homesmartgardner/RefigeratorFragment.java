@@ -1,6 +1,8 @@
 package com.cadovnik.homesmartgardner;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,12 +34,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,18 +59,31 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 public class RefigeratorFragment extends Fragment {
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static SSLContext context;
+//    private static HostnameVerifier hostnameVerifier;
     private LineChart lineChart;
     private TableLayout lastedTableLayout = null;
     private TextView dateFrom = null;
     private TextView dateTo = null;
     Calendar dateCFrom =  null;
     Calendar dateCTo =  null;
-    private static final String ServiceHistDataUrl = "http://www.cadovnik.fvds.ru:9999/sensors/historical-sensordata";
-    private  static  final String ServiceLatestDataUrl =  "http://cadovnik.fvds.ru:9999/sensors/latest-sensordata/";
+    private static final String ServiceHistDataUrl = "https://cadovnik.fvds.ru:9999/sensors/historical-sensordata";
+    private  static  final String ServiceLatestDataUrl =  "https://cadovnik.fvds.ru:9999/sensors/latest-sensordata/";
+    private  static  final String Hostname = "cadovnik.fvds.ru";
+    private static final String DateFormat = "MM/dd/yyyy";
     public static MainFragment newInstance(int index) {
         MainFragment f = new MainFragment();
 
@@ -76,77 +103,21 @@ public class RefigeratorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (container == null) {
-            // We have different layouts, and in one of them this
-            // fragment's containing frame doesn't exist. The fragment
-            // may still be created from its saved state, but there is
-            // no reason to try to create its view hierarchy because it
-            // isn't displayed. Note this isn't needed -- we could just
-            // run the code below, where we would create and return the
-            // view hierarchy; it would just never be used.
             return null;
         }
         View view = inflater.inflate(R.layout.refrigerate_chart, container, false);
+        trustAllHosts(getActivity().getResources());
+
         lastedTableLayout = (TableLayout) view.findViewById(R.id.lasted_data_table);
         lineChart = (LineChart) view.findViewById(R.id.chart);
-        lineChart.setDragEnabled(true);
-        lineChart.setScaleEnabled(true);
-        lineChart.setDrawGridBackground(false);
-        lineChart.setHighlightPerDragEnabled(true);
-        lineChart.setBackgroundColor(Color.WHITE);
-        lineChart.setViewPortOffsets(0f, 0f, 0f, 0f);
-        XAxis xAxis = lineChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE);
-//        xAxis.setTypeface(tfLight);
-        xAxis.setTextSize(10f);
-        xAxis.setTextColor(Color.WHITE);
-        xAxis.setDrawAxisLine(false);
-        xAxis.setDrawGridLines(true);
-        xAxis.setTextColor(Color.rgb(255, 192, 56));
-        xAxis.setCenterAxisLabels(true);
-        xAxis.setGranularity(1f); // one hour
-        xAxis.setValueFormatter(new DateFormatter());
-
-        YAxis leftAxis = lineChart.getAxisLeft();
-        leftAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-//        leftAxis.setTypeface(tfLight);
-        leftAxis.setTextColor(ColorTemplate.getHoloBlue());
-        leftAxis.setDrawGridLines(true);
-        leftAxis.setGranularityEnabled(true);
-        leftAxis.setAxisMinimum(0f);
-        leftAxis.setAxisMaximum(100);
-        leftAxis.setYOffset(-9f);
-        leftAxis.setTextColor(Color.rgb(255, 192, 56));
-
-        YAxis rightAxis = lineChart.getAxisRight();
-        rightAxis.setEnabled(false);
-
         dateFrom = (TextView) view.findViewById(R.id.dateFrom);
-        dateCFrom = Calendar.getInstance();
-        dateCTo = Calendar.getInstance();
-        dateFrom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DatePickerDialog(v.getContext(), dFrom,
-                        dateCFrom.get(Calendar.YEAR),
-                        dateCFrom.get(Calendar.MONTH),
-                        dateCFrom.get(Calendar.DAY_OF_MONTH))
-                        .show();
-            }
-        });
-
         dateTo = (TextView) view.findViewById(R.id.dateTo);
-        dateTo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DatePickerDialog(v.getContext(), dTo,
-                        dateCTo.get(Calendar.YEAR),
-                        dateCTo.get(Calendar.MONTH),
-                        dateCTo.get(Calendar.DAY_OF_MONTH))
-                        .show();
-            }
-        });
-        Button loadTextButton = (Button)view.findViewById(R.id.load_file_from_server);
-        loadTextButton.setOnClickListener(new View.OnClickListener() {
+
+        setUpChart();
+        setUpDates();
+
+        Button loadHistory = (Button)view.findViewById(R.id.load_file_from_server);
+        loadHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new HostoricalData().execute();
@@ -160,9 +131,73 @@ public class RefigeratorFragment extends Fragment {
                 new LastedData().execute();
             }
         });
+        loadHistory.callOnClick();
+        loadLasted.callOnClick();
         return view;
     }
 
+    private void setUpChart(){
+
+        lineChart.setDragEnabled(true);
+        lineChart.setScaleEnabled(true);
+        lineChart.setDrawGridBackground(false);
+        lineChart.setHighlightPerDragEnabled(true);
+        lineChart.setBackgroundColor(Color.WHITE);
+        lineChart.setViewPortOffsets(0f, 0f, 0f, 0f);
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE);
+        xAxis.setTextSize(10f);
+        xAxis.setTextColor(Color.WHITE);
+        xAxis.setDrawAxisLine(false);
+        xAxis.setDrawGridLines(true);
+        xAxis.setTextColor(Color.rgb(255, 192, 56));
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setGranularity(1f); // one hour
+        xAxis.setValueFormatter(new DateFormatter());
+
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        leftAxis.setTextColor(ColorTemplate.getHoloBlue());
+        leftAxis.setDrawGridLines(true);
+        leftAxis.setGranularityEnabled(true);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setAxisMaximum(100);
+        leftAxis.setYOffset(-9f);
+        leftAxis.setTextColor(Color.rgb(255, 192, 56));
+
+        YAxis rightAxis = lineChart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+    }
+
+    private void setUpDates(){
+        dateCFrom = Calendar.getInstance();
+        dateCTo = Calendar.getInstance();
+        final String currentDate = new SimpleDateFormat(DateFormat).format(Calendar.getInstance().getTime());
+        dateFrom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(v.getContext(), dFrom,
+                        dateCFrom.get(Calendar.YEAR),
+                        dateCFrom.get(Calendar.MONTH),
+                        dateCFrom.get(Calendar.DAY_OF_MONTH))
+                        .show();
+
+            }
+        });
+        dateFrom.setText(currentDate);
+        dateTo.setText(currentDate);
+        dateTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(v.getContext(), dTo,
+                        dateCTo.get(Calendar.YEAR),
+                        dateCTo.get(Calendar.MONTH),
+                        dateCTo.get(Calendar.DAY_OF_MONTH))
+                        .show();
+            }
+        });
+    }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -187,11 +222,11 @@ public class RefigeratorFragment extends Fragment {
         }
     };
     public void setFromDate(){
-        dateFrom.setText(new SimpleDateFormat("MM/dd/yyyy").format(dateCFrom.getTimeInMillis()).toString());
+        dateFrom.setText(new SimpleDateFormat(DateFormat).format(dateCFrom.getTimeInMillis()).toString());
     }
 
     public void setToDate(){
-        dateTo.setText(new SimpleDateFormat("MM/dd/yyyy").format(dateCTo.getTimeInMillis()).toString());
+        dateTo.setText(new SimpleDateFormat(DateFormat).format(dateCTo.getTimeInMillis()).toString());
     }
     private class DateFormatter implements IAxisValueFormatter {
 
@@ -250,7 +285,7 @@ public class RefigeratorFragment extends Fragment {
                         TextView viewSKind = new TextView(getContext());
                         viewSKind.setText(sensKind);
                         TextView viewSValDate = new TextView(getContext());
-                        viewSValDate.setText(new SimpleDateFormat("yy/MM/dd hh:mm:ss ").format(vals.getJSONObject(0).getLong("x")));
+                        viewSValDate.setText(new SimpleDateFormat("hh:mm:ss ").format(vals.getJSONObject(0).getLong("x")));
                         TextView viewSVal = new TextView(getContext());
                         viewSVal.setText(vals.getJSONObject(0).getString("y"));
                         tableRow.addView(viewSName);
@@ -305,7 +340,40 @@ public class RefigeratorFragment extends Fragment {
             Log.e("JSONException", "Error: " + e.toString());
         }
     }
+    @SuppressLint("TrulyRandom")
+    private static void trustAllHosts(Resources res) {
+        try {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            InputStream caInput = res.openRawResource(R.raw.certificate);
+            Certificate ca = null;
+            ca = cf.generateCertificate(caInput);
 
+            String keyStoreType = KeyStore.getDefaultType();
+            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+            keyStore.load(null, null);
+            keyStore.setCertificateEntry("ca", ca);
+
+            String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+            tmf.init(keyStore);
+
+            context = SSLContext.getInstance("TLS");
+            context.init(null, tmf.getTrustManagers(), null);
+        }catch (CertificateException e){
+            Log.e(e.getClass().toString(), "Error: " + e.toString());
+        }catch (KeyStoreException e){
+            Log.e(e.getClass().toString(), "Error: " + e.toString());
+        }catch (SecurityException e){
+            Log.e(e.getClass().toString(), "Error: " + e.toString());
+        }catch (NoSuchAlgorithmException e){
+            Log.e(e.getClass().toString(), "Error: " + e.toString());
+        }catch (KeyManagementException e){
+            Log.e(e.getClass().toString(), "Error: " + e.toString());
+        }catch (IOException e){
+            Log.e(e.getClass().toString(), "Error: " + e.toString());
+        }
+
+    }
 
     private JSONArray downloadRemoteTextFileContent(String reqURL){
         URL mUrl = null;
@@ -313,10 +381,18 @@ public class RefigeratorFragment extends Fragment {
         try {
             mUrl = new URL(reqURL);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Log.e("MalformedURLException", "Error: " + e.toString());
         };
         try {
-            URLConnection connection = mUrl.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) mUrl.openConnection();
+            HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return hostname.equals(Hostname);
+                }
+            };
+            connection.setHostnameVerifier(hostnameVerifier);
+            connection.setSSLSocketFactory(context.getSocketFactory());
             BufferedReader bReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"), 8);
             StringBuilder sBuilder = new StringBuilder();
 
