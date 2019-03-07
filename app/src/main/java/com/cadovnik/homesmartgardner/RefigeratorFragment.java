@@ -6,9 +6,13 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.support.v7.widget.Toolbar;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +58,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -61,19 +66,22 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
 
-public class RefigeratorFragment extends Fragment {
+public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, SwipeRefreshLayout.OnDragListener {
     private static SSLContext context;
     private LineChart lineChart;
     private TableLayout lastedTableLayout = null;
     private TextView dateFrom = null;
     private TextView dateTo = null;
-    private ProgressBar spinner = null;
+
     Calendar dateCFrom =  null;
     Calendar dateCTo =  null;
     private static final String ServiceHistDataUrl = "https://cadovnik.fvds.ru:9999/sensors/historical-sensordata";
     private  static  final String ServiceLatestDataUrl =  "https://cadovnik.fvds.ru:9999/sensors/latest-sensordata/";
     private  static  final String Hostname = "cadovnik.fvds.ru";
     private static final String DateFormat = "MM/dd/yyyy";
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private Button loadHistory;
+    private Button loadLasted;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,36 +90,40 @@ public class RefigeratorFragment extends Fragment {
         if (container == null) {
             return null;
         }
+        super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.refrigerate_chart, container, false);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
         trustAllHosts(getActivity().getResources());
-        spinner = (ProgressBar)view.findViewById(R.id.progressBar1);
         lastedTableLayout = (TableLayout) view.findViewById(R.id.lasted_data_table);
         lineChart = (LineChart) view.findViewById(R.id.chart);
         dateFrom = (TextView) view.findViewById(R.id.dateFrom);
         dateTo = (TextView) view.findViewById(R.id.dateTo);
-        spinner.setVisibility(View.GONE);
         setUpChart();
         setUpDates();
 
-        Button loadHistory = (Button)view.findViewById(R.id.load_file_from_server);
+        loadHistory = (Button)view.findViewById(R.id.load_file_from_server);
         loadHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new HostoricalData().execute();
-                spinner.setVisibility(View.VISIBLE);
+                mSwipeRefreshLayout.setRefreshing(true);
+                onRefresh();
             }
         });
 
-        Button loadLasted = (Button)view.findViewById(R.id.get_lasted);
+        loadLasted = (Button)view.findViewById(R.id.get_lasted);
         loadLasted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new LastedData().execute();
-                spinner.setVisibility(View.VISIBLE);
+                mSwipeRefreshLayout.setRefreshing(true);
+                onRefresh();
             }
         });
-        loadHistory.callOnClick();
-        loadLasted.callOnClick();
+        mSwipeRefreshLayout.setRefreshing(true);
+        StartRefresh();
         return view;
     }
 
@@ -182,7 +194,8 @@ public class RefigeratorFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
-        getActivity().setTitle("Refigerator");
+        getActivity().setTitle(R.string.refrigerator);
+        ((MainActivity)getActivity()).getSupportActionBar().setIcon(R.mipmap.refrigerator);
     }
 
     DatePickerDialog.OnDateSetListener dFrom = new DatePickerDialog.OnDateSetListener() {
@@ -208,6 +221,21 @@ public class RefigeratorFragment extends Fragment {
 
     public void setToDate(){
         dateTo.setText(new SimpleDateFormat(DateFormat).format(dateCTo.getTimeInMillis()).toString());
+    }
+
+    @Override
+    public void onRefresh() {
+        StartRefresh();
+    }
+
+    @Override
+    public boolean onDrag(View v, DragEvent event) {
+        return false;
+    }
+
+    private void StartRefresh(){
+        new HostoricalData().execute();
+        new LastedData().execute();
     }
     private class DateFormatter implements IAxisValueFormatter {
 
@@ -400,13 +428,13 @@ public class RefigeratorFragment extends Fragment {
 
                 @Override
                 public void run() {
-                    spinner.setVisibility(View.GONE);
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             });
         } catch (JSONException e) {
-            Log.e("JSONException", "Error: " + e.toString());
+            Log.e(e.getClass().toString(), "Error: " + e.toString());
         } catch (Exception e) {
-            Log.e("StringBuilding & BufferedReader", "Error converting result " + e.toString());
+            Log.e(e.getClass().toString(), "Error: " + e.toString());
         }
 
 

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<android.support.v4.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:id="@+id/swipe_container"
     android:layout_height="match_parent">
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -19,7 +20,7 @@
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/chart"
             android:layout_width="fill_parent"
-            android:layout_height="@dimen/nav_header_height"/>
+            android:layout_height="500dp"/>
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:orientation="horizontal"
@@ -41,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="24dp"
                 android:text="@string/refrigerator"
-                android:background="@color/colorAccent"/>
+                android:background="@drawable/btn_rounded"/>
         </LinearLayout>
         <TableLayout
             android:id="@+id/lasted_data_table"
@@ -49,12 +50,12 @@
             android:layout_height="wrap_content">
             <TableRow>
                 <TextView
-                    android:id="@+id/sensKind"
-                    android:text="Sensor Kind:"
-                    android:padding="3dip" />
-                <TextView
                     android:id="@+id/SensName"
                     android:text="Sensor Name:"
+                    android:padding="3dip" />
+                <TextView
+                    android:id="@+id/sensKind"
+                    android:text="Sensor Kind:"
                     android:padding="3dip" />
                 <TextView
                     android:id="@+id/valTime"
@@ -73,12 +74,6 @@
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:text="Get Lasted"
-            android:background="@color/colorAccent"/>
+            android:background="@drawable/btn_rounded"/>
     </LinearLayout>
-    <ProgressBar
-        android:id="@+id/progressBar1"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true" />
-</android.support.constraint.ConstraintLayout>
+</android.support.v4.widget.SwipeRefreshLayout>
