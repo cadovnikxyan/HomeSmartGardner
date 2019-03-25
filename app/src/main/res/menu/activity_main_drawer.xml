@@ -13,9 +13,9 @@
             android:icon="@drawable/ic_refrigerator"
             android:title="Refrigerator" />
         <item
-            android:id="@+id/nav_smokehouse"
+            android:id="@+id/nav_heat_treatment"
             android:icon="@drawable/ic_smoke_bomb"
-            android:title="@string/smokehouse" />
+            android:title="@string/heat_treatment" />
     </group>
 
 </menu>

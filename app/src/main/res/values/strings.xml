@@ -7,6 +7,11 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="refrigerator"> Refrigerator</string>
-    <string name="smokehouse"> Smokehouse</string>
+    <string name="heat_treatment"> Heat Treatment</string>
     <string name="main"> Main</string>
+    <string name="heating_notification_title_template">Heating: %1$s</string>
+    <string name="heating_notification_placeholder_text_template"></string>
+    <string name="action_share">Share</string>
+    <string name="action_reply">Reply</string>
+    <string name="esp_hostname">cadovnik_esp8266.local</string>
 </resources>
