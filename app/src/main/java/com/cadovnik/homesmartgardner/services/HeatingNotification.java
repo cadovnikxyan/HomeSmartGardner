@@ -9,11 +9,9 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
+import android.widget.RemoteViews;
 
 import com.cadovnik.homesmartgardner.R;
 import com.cadovnik.homesmartgardner.view.MainActivity;
@@ -70,6 +68,11 @@ public class HeatingNotification {
                         .setContentText("Heating in process");
         Intent resultIntent = new Intent(contex, MainActivity.class);
 
+
+        RemoteViews remoteViewsExtended = new RemoteViews("Heating process ", R.layout.process_notification);
+//        remoteViewsExtended.setTextViewText(R.id.textView, "Extended custom notification text");
+//        remoteViewsExtended.setOnClickPendingIntent(R.id.root, rootPendingIntent);
+
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(contex);
         stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(resultIntent);
@@ -78,7 +81,10 @@ public class HeatingNotification {
                         0,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
-        builder.setContentIntent(resultPendingIntent);
+        builder.setContentIntent(resultPendingIntent)
+                .setCustomBigContentView(remoteViewsExtended)
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle());
+
         NotificationManager mNotificationManager =
                 (NotificationManager) contex.getSystemService(Context.NOTIFICATION_SERVICE);
 // mId allows you to update the notification later on.

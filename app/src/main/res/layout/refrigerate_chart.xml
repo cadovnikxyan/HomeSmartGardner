@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:id="@+id/swipe_container"
@@ -29,12 +29,12 @@
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/dateFrom"
-                android:text="DateFrom"
+                android:text="@string/datefrom"
                 android:layout_width="100dp"
                 android:layout_height="24dp" />
             <TextView
                 android:id="@+id/dateTo"
-                android:text="DateTo"
+                android:text="@string/dateto"
                 android:layout_width="100dp"
                 android:layout_height="24dp" />
             <Button
@@ -51,19 +51,19 @@
             <TableRow>
                 <TextView
                     android:id="@+id/SensName"
-                    android:text="Sensor Name:"
+                    android:text="@string/sensor_name"
                     android:padding="3dip" />
                 <TextView
                     android:id="@+id/sensKind"
-                    android:text="Sensor Kind:"
+                    android:text="@string/sensor_kind"
                     android:padding="3dip" />
                 <TextView
                     android:id="@+id/valTime"
-                    android:text="Value Time:"
+                    android:text="@string/value_time"
                     android:padding="3dip" />
                 <TextView
                     android:id="@+id/val"
-                    android:text="Value:"
+                    android:text="@string/value_sensor"
                     android:padding="3dip" />
             </TableRow>
 
@@ -73,7 +73,7 @@
             android:id="@+id/get_lasted"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
-            android:text="Get Lasted"
+            android:text="@string/get_lasted"
             android:background="@drawable/btn_rounded"/>
     </LinearLayout>
-</android.support.v4.widget.SwipeRefreshLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

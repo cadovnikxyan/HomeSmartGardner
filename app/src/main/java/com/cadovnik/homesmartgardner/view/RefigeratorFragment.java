@@ -3,9 +3,6 @@ package com.cadovnik.homesmartgardner.view;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -27,7 +24,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.*;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,6 +39,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -70,22 +70,31 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
             try {
                 jarray = new JSONArray(response.body().string());
             } catch (JSONException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-                });
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
+                catch (NullPointerException ee){
+
+                }
                 return;
             }
             JSONArray finalJarray = jarray;
-            getActivity().runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                createLineGraph(finalJarray);
-                                            }
-                                        });
+            try{
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        createLineGraph(finalJarray);
+                    }
+                });
+            }catch (NullPointerException e) {
+
+            }
         }
     };
     private Callback lastedDataCallback = new Callback() {
