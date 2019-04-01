@@ -81,6 +81,15 @@
                     style="@style/TextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:drawableStart="@color/colorAccent"
+                    android:drawableLeft="@color/colorAccent"
+                    android:drawableTop="@color/colorAccent"
+                    android:drawableEnd="@color/colorAccent"
+                    android:drawableRight="@color/colorAccent"
+                    android:drawableBottom="@color/colorAccent"
+                    android:drawablePadding="2dp"
+                    android:drawableTint="@color/colorAccent"
+                    android:drawableTintMode="src_over"
                     android:hint="@string/nitrite_salt_percent"
                     android:inputType="numberDecimal"
                     android:numeric="decimal"
@@ -120,13 +129,10 @@
                 android:layout_gravity="center_horizontal"
                 android:text="@string/salting_result_header" />
 
-            <EditText
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/salting_result"
                 android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:editable="false"
-                android:ems="10"
-                android:inputType="textMultiLine" />
+                android:layout_height="wrap_content" />
 
             <LinearLayout
                 android:layout_width="match_parent"
