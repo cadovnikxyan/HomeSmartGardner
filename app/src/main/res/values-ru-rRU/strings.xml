@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Помошник Колбасника</string>
+    <string name="nav_header_title">Помошник Колбасника</string>
+    <string name="action_settings" translatable="false">Настройки</string>
+    <string name="refrigerator">Холодильник</string>
+    <string name="heat_treatment">Термообработка</string>
+    <string name="heating_notification_title_template">Нагрев</string>
+    <string name="sausage_maker">Колабсы</string>
+    <string name="salting_calculator">Калькулятор посола</string>
+    <string name="weight_meat">Вес мяса</string>
+    <string name="salting_percent">Процент солености</string>
+    <string name="dry_wet_salting">Мокрый посол</string>
+    <string name="phosphates">Фосфаты</string>
+    <string name="sodium_ascorbate">Аскорбинат натрия</string>
+    <string name="salting_result_header">Результаты :</string>
+    <string name="salting_calculate">Расчет</string>
+    <string name="salting_save">Сохранить посол</string>
+    <string name="salting_history">Посмотреть историю</string>
+    <string name="nitrite_salt_percent">Процент нитритной соли</string>
+    <string name="datefrom">Дата от</string>
+    <string name="dateto">Дата до</string>
+    <string name="sensor_name">Имя сенсора:</string>
+    <string name="sensor_kind">Вид сенсора:</string>
+    <string name="value_time">Время:</string>
+    <string name="get_lasted">Последние</string>
+    <string name="start_heating">Старт</string>
+    <string name="heating_switch">Нагрев</string>
+    <string name="convection">Конвекция</string>
+    <string name="current_heating_mode">Текущий режим</string>
+    <string name="value_sensor">Значеие сенсора:</string>
+    <string name="refrigerator_menu">Холодильник</string>
+</resources>
