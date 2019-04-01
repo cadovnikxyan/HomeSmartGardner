@@ -6,8 +6,8 @@ public class HeatingContract {
     private HeatingContract(){
 
     }
-    public static final class HeatingProcessUnit implements BaseColumns {
-        public final static String TABLE_NAME = "HeatingProcessUnit";
+    public static final class HeatingProcessUnitDB implements BaseColumns {
+        public final static String TABLE_NAME = "HeatingProcessUnitDB";
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_MODE = "mode";
         public final static String COLUMN_PROBE_TEMP = "probe_temp";
@@ -18,8 +18,8 @@ public class HeatingContract {
 
     }
 
-    public static final class HeatingProcess implements BaseColumns {
-        public final static String TABLE_NAME = "HeatingProcess";
+    public static final class HeatingProcessDB implements BaseColumns {
+        public final static String TABLE_NAME = "HeatingProcessDB";
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_UNIT = "unit";
         public final static String COLUMN_START_DATE = "start_date";
@@ -27,10 +27,29 @@ public class HeatingContract {
         public final static String COLUMN_STATUS = "status";
     }
 
-    public static final class HeatingProcessHistory implements BaseColumns {
-        public final static String TABLE_NAME = "HeatingProcessHistory";
+    public static final class HeatingProcessHistoryDB implements BaseColumns {
+        public final static String TABLE_NAME = "HeatingProcessHistoryDB";
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_PROCESSES = "heating_processes";
         public final static String COLUMN_DATE = "date";
+    }
+
+    public static  final class SaltingUnitDB implements  BaseColumns{
+        public final static String TABLE_NAME = "SaltingUnitDB";
+        public final static String _ID = BaseColumns._ID;
+        public final static String COLUMN_SAUSAGE_NAME = "SausageName";
+        public final static String COLUMN_MEAT_WEIGHT = "MeatWeight";
+        public final static String COLUMN_ROCK_SALT_WEIGHT = "RockSaltWeight";
+        public final static String COLUMN_NITRITE_SALT_WEIGHT = "NitriteSaltWeight";
+        public final static String COLUMN_PHOSPHATES_WEIGHT = "PhosphatesWeight";
+        public final static String COLUMN_SODIUM_ASCORBATE_WEIGHT = "SodiumAscorbateWeight";
+        public final static String COLUMN_BRINE_WEIGHT = "BrineWeight";
+        public final static String COLUMN_DATE = "date";
+    }
+
+    public static  final class SaltingHistoryDB implements  BaseColumns{
+        public final static String TABLE_NAME = "SaltingHistoryDB";
+        public final static String _ID = BaseColumns._ID;
+        public final static String COLUMN_SALTINGS = "saltings";
     }
 }

@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 public class HeatingDataController extends SQLiteOpenHelper {
     public static final String LOG_TAG = HeatingDataController.class.getSimpleName();
-    private static final String DATABASE_NAME = "heating.db";
+    private static final String DATABASE_NAME = "sausagemakerhelper.db";
     private static final int DATABASE_VERSION = 1;
 
     public HeatingDataController(@Nullable Context context) {
