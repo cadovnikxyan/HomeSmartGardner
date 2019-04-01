@@ -16,8 +16,8 @@
     <string name="esp_hostname" translatable="false">cadovnik_esp8266.local</string>
     <string name="sausage_maker">Sausage</string>
     <string name="salting_calculator">Salting Calculator</string>
-    <string name="weight_meat">Weight of meat :</string>
-    <string name="salting_percent">Salting percent(%) :</string>
+    <string name="weight_meat">Weight of meat</string>
+    <string name="salting_percent">Salting percent(%)</string>
     <string name="salting_percent_default" translatable="false">2.2</string>
     <string name="dry_wet_salting">Wet Salting</string>
     <string name="phosphates">With Phosphates</string>
@@ -26,7 +26,7 @@
     <string name="salting_calculate">Calculate</string>
     <string name="salting_save">Save Salting</string>
     <string name="salting_history">View History</string>
-    <string name="nitrite_salt_percent">Nitrite salt(%) :</string>
+    <string name="nitrite_salt_percent">Nitrite salt(%)</string>
     <string name="nitrite_salt_default" translatable="false">55</string>
     <string name="datefrom">Date From</string>
     <string name="dateto">Date To</string>

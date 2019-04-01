@@ -12,16 +12,23 @@ import com.cadovnik.sausagemakerhelper.R;
 import com.cadovnik.sausagemakerhelper.data.SaltingUnit;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SausageFragment extends Fragment {
 
-    SaltingUnit saltingUnit;
+    private SaltingUnit saltingUnit;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,6 +48,10 @@ public class SausageFragment extends Fragment {
             saltingUnit.setWith_sodium_ascorbate(getValue(view, R.id.sodium_ascorbate));
 
             RecyclerView result = view.findViewById(R.id.salting_result);
+            result.setHasFixedSize(true);
+            layoutManager = new LinearLayoutManager(getActivity());
+            result.setLayoutManager(layoutManager);
+
             saltingCalculate(result);
 
         });
@@ -51,6 +62,38 @@ public class SausageFragment extends Fragment {
         });
         return view;
     }
+
+    public static class SaltingAdapter extends RecyclerView.Adapter<SaltingAdapter.ViewHolder>{
+        private List<String> data;
+        public SaltingAdapter(List<String> list){
+            data = list;
+        }
+        @NonNull
+        @Override
+        public SaltingAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            TextView text = new TextView(parent.getContext());
+            SaltingAdapter.ViewHolder v = new SaltingAdapter.ViewHolder(text);
+            return v;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull SaltingAdapter.ViewHolder holder, int position) {
+            holder.textView.setText(data.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return data.size();
+        }
+
+        public static class  ViewHolder  extends RecyclerView.ViewHolder {
+            public TextView textView;
+            public ViewHolder(@NonNull TextView itemView) {
+                super(itemView);
+                textView = itemView;
+            }
+        }
+    }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -59,11 +102,8 @@ public class SausageFragment extends Fragment {
     }
 
     private void saltingCalculate(RecyclerView view){
-        for ( String str : saltingUnit.calculate()){
-            TextView text = new TextView(getContext());
-            text.setText(str);
-            view.addView(text);
-        }
+        adapter = new SaltingAdapter(saltingUnit.calculate());
+        view.setAdapter(adapter);
     }
 
     private double getValue(View view, int id, double defaultValue){
