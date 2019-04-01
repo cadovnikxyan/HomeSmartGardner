@@ -1,4 +1,4 @@
-package com.cadovnik.homesmartgardner;
+package com.cadovnik.sausagemakerhelper;
 
 import org.junit.Test;
 

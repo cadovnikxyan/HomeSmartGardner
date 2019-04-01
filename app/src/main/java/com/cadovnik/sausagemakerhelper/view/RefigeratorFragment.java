@@ -1,4 +1,4 @@
-package com.cadovnik.homesmartgardner.view;
+package com.cadovnik.sausagemakerhelper.view;
 
 import android.app.DatePickerDialog;
 import android.graphics.Color;
@@ -15,8 +15,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cadovnik.homesmartgardner.R;
-import com.cadovnik.homesmartgardner.http.HttpConnectionHandler;
+import com.cadovnik.sausagemakerhelper.R;
+import com.cadovnik.sausagemakerhelper.http.HttpConnectionHandler;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;

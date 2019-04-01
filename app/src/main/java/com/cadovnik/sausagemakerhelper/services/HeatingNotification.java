@@ -1,4 +1,4 @@
-package com.cadovnik.homesmartgardner.services;
+package com.cadovnik.sausagemakerhelper.services;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
@@ -13,8 +13,8 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 import android.widget.RemoteViews;
 
-import com.cadovnik.homesmartgardner.R;
-import com.cadovnik.homesmartgardner.view.MainActivity;
+import com.cadovnik.sausagemakerhelper.R;
+import com.cadovnik.sausagemakerhelper.view.MainActivity;
 
 /**
  * Helper class for showing and canceling heating

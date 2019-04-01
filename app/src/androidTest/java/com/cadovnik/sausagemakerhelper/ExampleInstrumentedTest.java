@@ -1,4 +1,4 @@
-package com.cadovnik.homesmartgardner;
+package com.cadovnik.sausagemakerhelper;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.cadovnik.homesmartgardner", appContext.getPackageName());
+        assertEquals("com.cadovnik.sausagemakerhelper", appContext.getPackageName());
     }
 }

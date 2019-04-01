@@ -1,4 +1,4 @@
-package com.cadovnik.homesmartgardner.data;
+package com.cadovnik.sausagemakerhelper.data;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;

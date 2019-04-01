@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-        <com.cadovnik.homesmartgardner.view.HeatingView
+        <com.cadovnik.sausagemakerhelper.view.HeatingView
             android:id="@+id/probe_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
             app:image="@drawable/inside_product"
             android:layout_marginEnd="12dp"/>
 
-        <com.cadovnik.homesmartgardner.view.HeatingView
+        <com.cadovnik.sausagemakerhelper.view.HeatingView
             android:id="@+id/outside_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

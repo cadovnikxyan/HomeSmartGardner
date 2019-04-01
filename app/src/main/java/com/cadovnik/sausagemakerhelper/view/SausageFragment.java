@@ -1,4 +1,4 @@
-package com.cadovnik.homesmartgardner.view;
+package com.cadovnik.sausagemakerhelper.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.cadovnik.homesmartgardner.R;
+import com.cadovnik.sausagemakerhelper.R;
 import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.annotation.Nullable;
@@ -57,8 +57,6 @@ public class SausageFragment extends Fragment {
 
         return builder.toString();
     }
-
-
 
     private double getValue(View view, int id, double defaultValue){
         double result = 0.0;

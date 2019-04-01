@@ -1,4 +1,4 @@
-package com.cadovnik.homesmartgardner.view;
+package com.cadovnik.sausagemakerhelper.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -7,7 +7,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.cadovnik.homesmartgardner.R;
+import com.cadovnik.sausagemakerhelper.R;
 
 import androidx.annotation.Nullable;
 

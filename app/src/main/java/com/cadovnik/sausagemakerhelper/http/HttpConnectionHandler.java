@@ -1,14 +1,10 @@
-package com.cadovnik.homesmartgardner.http;
+package com.cadovnik.sausagemakerhelper.http;
 
 import android.annotation.SuppressLint;
-import android.content.res.Resources;
 import android.util.Log;
-
-import com.cadovnik.homesmartgardner.R;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -16,26 +12,17 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.util.Arrays;
-import java.util.Collection;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-import androidx.annotation.Nullable;
-import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class HttpConnectionHandler {
     private static final String Hostname = "cadovnik.fvds.ru";

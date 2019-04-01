@@ -1,11 +1,11 @@
-package com.cadovnik.homesmartgardner.view;
+package com.cadovnik.sausagemakerhelper.view;
 
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
 
-import com.cadovnik.homesmartgardner.R;
+import com.cadovnik.sausagemakerhelper.R;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;

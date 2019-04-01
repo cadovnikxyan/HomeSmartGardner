@@ -1,4 +1,4 @@
-package com.cadovnik.homesmartgardner.services;
+package com.cadovnik.sausagemakerhelper.services;
 
 import android.app.IntentService;
 import android.content.Intent;

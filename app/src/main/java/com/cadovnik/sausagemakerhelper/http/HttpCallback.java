@@ -1,4 +1,4 @@
-package com.cadovnik.homesmartgardner.http;
+package com.cadovnik.sausagemakerhelper.http;
 
 import java.io.IOException;
 

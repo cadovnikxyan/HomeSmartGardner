@@ -1,4 +1,4 @@
-package com.cadovnik.homesmartgardner.data;
+package com.cadovnik.sausagemakerhelper.data;
 
 public enum HeatingStatus {
     HEATING_SUCCESS,
