@@ -76,18 +76,18 @@ public class HeatingProcessUnit implements IDBHelper {
     @Override
     public ContentValues convert() {
         ContentValues values = new ContentValues();
-        values.put(HeatingContract.HeatingProcessUnitDB.COLUMN_MODE, getMode());
-        values.put(HeatingContract.HeatingProcessUnitDB.COLUMN_TEMP, temp);
-        values.put(HeatingContract.HeatingProcessUnitDB.COLUMN_PROBE_TEMP, probe_temp);
-        values.put(HeatingContract.HeatingProcessUnitDB.COLUMN_HEATING, heating);
-        values.put(HeatingContract.HeatingProcessUnitDB.COLUMN_CONVECTION, convection);
-        values.put(HeatingContract.HeatingProcessUnitDB.COLUMN_TIMESTAMP, date.toString());
+        values.put(DataContract.HeatingProcessUnitDB.COLUMN_MODE, getMode());
+        values.put(DataContract.HeatingProcessUnitDB.COLUMN_TEMP, temp);
+        values.put(DataContract.HeatingProcessUnitDB.COLUMN_PROBE_TEMP, probe_temp);
+        values.put(DataContract.HeatingProcessUnitDB.COLUMN_HEATING, heating);
+        values.put(DataContract.HeatingProcessUnitDB.COLUMN_CONVECTION, convection);
+        values.put(DataContract.HeatingProcessUnitDB.COLUMN_TIMESTAMP, date.toString());
         return values;
     }
 
     @Override
     public long insert(SQLiteDatabase db, ContentValues values) {
-        DBTableId = db.insert(HeatingContract.HeatingProcessUnitDB.TABLE_NAME, null, values);
+        DBTableId = db.insert(DataContract.HeatingProcessUnitDB.TABLE_NAME, null, values);
         return DBTableId;
     }
 

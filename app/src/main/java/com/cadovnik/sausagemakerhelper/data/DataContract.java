@@ -2,8 +2,8 @@ package com.cadovnik.sausagemakerhelper.data;
 
 import android.provider.BaseColumns;
 
-public class HeatingContract {
-    private HeatingContract(){
+public class DataContract {
+    private DataContract(){
 
     }
     public static final class HeatingProcessUnitDB implements BaseColumns {

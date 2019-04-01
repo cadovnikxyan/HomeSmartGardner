@@ -39,7 +39,7 @@ public class HeatingProcess implements IDBHelper {
         for ( HeatingProcessUnit unit : unitList ) {
             ContentValues unitValues = unit.convert();
             long id = unit.insert(db, unitValues);
-            values.put(HeatingContract.HeatingProcessDB.COLUMN_UNIT, id);
+            values.put(DataContract.HeatingProcessDB.COLUMN_UNIT, id);
         }
         insert(db, values);
     }
@@ -47,15 +47,15 @@ public class HeatingProcess implements IDBHelper {
     @Override
     public ContentValues convert() {
         ContentValues values = new ContentValues();
-        values.put(HeatingContract.HeatingProcessDB.COLUMN_START_DATE, startDate.toString());
-        values.put(HeatingContract.HeatingProcessDB.COLUMN_STOP_DATE, stopDate.toString());
-        values.put(HeatingContract.HeatingProcessDB.COLUMN_STATUS, status.toString());
+        values.put(DataContract.HeatingProcessDB.COLUMN_START_DATE, startDate.toString());
+        values.put(DataContract.HeatingProcessDB.COLUMN_STOP_DATE, stopDate.toString());
+        values.put(DataContract.HeatingProcessDB.COLUMN_STATUS, status.toString());
         return values;
     }
 
     @Override
     public long insert(SQLiteDatabase db, ContentValues values) {
-        return db.insert(HeatingContract.HeatingProcessDB.TABLE_NAME, null, values);
+        return db.insert(DataContract.HeatingProcessDB.TABLE_NAME, null, values);
     }
 
     public void setStatus(HeatingStatus status) {

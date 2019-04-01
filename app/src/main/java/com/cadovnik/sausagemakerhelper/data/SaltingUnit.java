@@ -63,20 +63,20 @@ public class SaltingUnit implements IDBHelper  {
     @Override
     public ContentValues convert() {
         ContentValues values = new ContentValues();
-        values.put(HeatingContract.SaltingUnitDB.COLUMN_BRINE_WEIGHT, brine);
-        values.put(HeatingContract.SaltingUnitDB.COLUMN_MEAT_WEIGHT, weight_of_meat);
-        values.put(HeatingContract.SaltingUnitDB.COLUMN_ROCK_SALT_WEIGHT, rock_salt);
-        values.put(HeatingContract.SaltingUnitDB.COLUMN_NITRITE_SALT_WEIGHT, nitrite_salt);
-        values.put(HeatingContract.SaltingUnitDB.COLUMN_PHOSPHATES_WEIGHT, phosphates);
-        values.put(HeatingContract.SaltingUnitDB.COLUMN_SODIUM_ASCORBATE_WEIGHT, sodium_ascorbate);
-        values.put(HeatingContract.SaltingUnitDB.COLUMN_SAUSAGE_NAME, sausage_name);
-        values.put(HeatingContract.SaltingUnitDB.COLUMN_DATE, date.toString());
+        values.put(DataContract.SaltingUnitDB.COLUMN_BRINE_WEIGHT, brine);
+        values.put(DataContract.SaltingUnitDB.COLUMN_MEAT_WEIGHT, weight_of_meat);
+        values.put(DataContract.SaltingUnitDB.COLUMN_ROCK_SALT_WEIGHT, rock_salt);
+        values.put(DataContract.SaltingUnitDB.COLUMN_NITRITE_SALT_WEIGHT, nitrite_salt);
+        values.put(DataContract.SaltingUnitDB.COLUMN_PHOSPHATES_WEIGHT, phosphates);
+        values.put(DataContract.SaltingUnitDB.COLUMN_SODIUM_ASCORBATE_WEIGHT, sodium_ascorbate);
+        values.put(DataContract.SaltingUnitDB.COLUMN_SAUSAGE_NAME, sausage_name);
+        values.put(DataContract.SaltingUnitDB.COLUMN_DATE, date.toString());
         return null;
     }
 
     @Override
     public long insert(SQLiteDatabase db, ContentValues values) {
-        DBTableId = db.insert(HeatingContract.SaltingUnitDB.TABLE_NAME, null, values);
+        DBTableId = db.insert(DataContract.SaltingUnitDB.TABLE_NAME, null, values);
         return DBTableId;
     }
 
