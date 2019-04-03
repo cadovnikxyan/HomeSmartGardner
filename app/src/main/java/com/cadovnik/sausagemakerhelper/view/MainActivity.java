@@ -3,13 +3,17 @@ package com.cadovnik.sausagemakerhelper.view;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import androidx.appcompat.widget.Toolbar;
 
 import com.cadovnik.sausagemakerhelper.R;
+import com.cadovnik.sausagemakerhelper.view.fragments.HeatTreatmentFragment;
+import com.cadovnik.sausagemakerhelper.view.fragments.RefigeratorFragment;
+import com.cadovnik.sausagemakerhelper.view.fragments.SausageMakerFragment;
+import com.cadovnik.sausagemakerhelper.view.fragments.SausageNoteBookFragment;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -34,7 +38,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        displaySelectedScreen(R.id.sausage_maker);
+        displaySelectedScreen(R.id.sausage_notebooks);
     }
 
     @Override
@@ -77,9 +81,11 @@ public class MainActivity extends AppCompatActivity
         if (itemId == R.id.nav_refrigerator) {
             fragment = new RefigeratorFragment();
         } else if (itemId == R.id.sausage_maker) {
-            fragment = new SausageFragment();
+            fragment = new SausageMakerFragment();
         } else if ( itemId == R.id.nav_heat_treatment) {
             fragment = new HeatTreatmentFragment();
+        } else if ( itemId == R.id.sausage_notebooks){
+            fragment = new SausageNoteBookFragment();
         }
 
         //replacing the fragment

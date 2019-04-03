@@ -5,6 +5,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/sausage_notebooks"
+            android:icon="@drawable/notes"
+            android:title="@string/sausage_notes" />
+        <item
             android:id="@+id/sausage_maker"
             android:icon="@drawable/salami"
             android:title="@string/sausage_maker" />

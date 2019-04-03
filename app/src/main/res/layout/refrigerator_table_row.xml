@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="5dp"
+    android:layout_margin="10dp"
+    android:layout_weight="1">
+
+    <TextView
+        android:id="@+id/sensName1"
+        android:layout_weight="1"
+        android:text="@string/sensor_name"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/sensKind1"
+        android:layout_weight="1"
+        android:textAlignment="center"
+        android:text="@string/sensor_kind" />
+
+    <TextView
+        android:id="@+id/valTime1"
+        android:layout_weight="1"
+        android:textAlignment="center"
+        android:text="@string/value_time" />
+
+    <TextView
+        android:id="@+id/val1"
+        android:layout_weight="1"
+        android:textAlignment="center"
+        android:text="@string/value_sensor" />
+</TableRow>

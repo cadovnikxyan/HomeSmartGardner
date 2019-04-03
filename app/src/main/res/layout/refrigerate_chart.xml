@@ -4,6 +4,9 @@
     android:layout_width="match_parent"
     android:id="@+id/swipe_container"
     android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -17,63 +20,104 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         tools:context="com.cadovnik.sausagemakerhelper.view.MainActivity">
+
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/chart"
             android:layout_width="fill_parent"
-            android:layout_height="500dp"/>
+            android:layout_height="367dp"
+            android:layout_margin="5dp"
+            android:padding="5dp" />
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:orientation="horizontal"
             android:gravity="center"
+            android:padding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/dateFrom"
                 android:text="@string/datefrom"
+                android:layout_weight="1"
                 android:layout_width="100dp"
                 android:layout_height="24dp" />
             <TextView
                 android:id="@+id/dateTo"
                 android:text="@string/dateto"
+                android:layout_weight="1"
                 android:layout_width="100dp"
                 android:layout_height="24dp" />
-            <Button
-                android:id="@+id/load_file_from_server"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:text="@string/refrigerator"
-                android:background="@drawable/btn_rounded"/>
         </LinearLayout>
         <TableLayout
             android:id="@+id/lasted_data_table"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
-            <TableRow>
+
+            <TableRow
+                android:padding="5dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@color/colorAccent">
                 <TextView
                     android:id="@+id/SensName"
-                    android:text="@string/sensor_name"
-                    android:padding="3dip" />
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    android:text="@string/sensor_name" />
+
                 <TextView
                     android:id="@+id/sensKind"
-                    android:text="@string/sensor_kind"
-                    android:padding="3dip" />
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    android:text="@string/sensor_kind" />
+
                 <TextView
                     android:id="@+id/valTime"
-                    android:text="@string/value_time"
-                    android:padding="3dip" />
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    android:text="@string/value_time" />
+
                 <TextView
                     android:id="@+id/val"
-                    android:text="@string/value_sensor"
-                    android:padding="3dip" />
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    android:text="@string/value_sensor" />
             </TableRow>
 
         </TableLayout>
-
-        <Button
-            android:id="@+id/get_lasted"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:text="@string/get_lasted"
-            android:background="@drawable/btn_rounded"/>
     </LinearLayout>
+
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            xmlns:fab="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/multiple_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            fab:fab_addButtonColorNormal="@color/colorAccent"
+            fab:fab_addButtonColorPressed="@color/colorPrimary"
+            fab:fab_addButtonPlusIconColor="@color/half_black"
+            fab:fab_labelStyle="@style/menu_labels_style"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp">
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/load_file_from_server"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/white"
+                fab:fab_icon="@mipmap/refrigerator"
+                fab:fab_title="@string/refrigerator"
+                fab:fab_colorPressed="@color/white_pressed"/>
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/get_lasted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/white"
+                fab:fab_title="@string/get_lasted"
+                fab:fab_colorPressed="@color/white_pressed"/>
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
+    </RelativeLayout>
+
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -1,5 +1,6 @@
-package com.cadovnik.sausagemakerhelper.view;
+package com.cadovnik.sausagemakerhelper.view.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -17,6 +19,8 @@ import android.widget.Toast;
 
 import com.cadovnik.sausagemakerhelper.R;
 import com.cadovnik.sausagemakerhelper.http.HttpConnectionHandler;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -40,6 +44,7 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import okhttp3.Call;
@@ -152,31 +157,27 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.refrigerate_chart, container, false);
         HttpConnectionHandler.Initialize(getActivity().getResources().openRawResource(R.raw.certificate));
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
-        lastedTableLayout = (TableLayout) view.findViewById(R.id.lasted_data_table);
-        lineChart = (LineChart) view.findViewById(R.id.chart);
-        dateFrom = (TextView) view.findViewById(R.id.dateFrom);
-        dateTo = (TextView) view.findViewById(R.id.dateTo);
+        lastedTableLayout = view.findViewById(R.id.lasted_data_table);
+        lineChart = view.findViewById(R.id.chart);
+        dateFrom = view.findViewById(R.id.dateFrom);
+        dateTo = view.findViewById(R.id.dateTo);
         setUpChart();
         setUpDates();
-
-        Button loadHistory = (Button) view.findViewById(R.id.load_file_from_server);
-        loadHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                HttpConnectionHandler.getInstance().getRequest(getTimeStampResponce(), graphCallback );
-                mSwipeRefreshLayout.setRefreshing(true);
-            }
+        FloatingActionsMenu menu = view.findViewById(R.id.multiple_actions);
+        FloatingActionButton loadHistory = view.findViewById(R.id.load_file_from_server);
+        loadHistory.setOnClickListener(view1 -> {
+            HttpConnectionHandler.getInstance().getRequest(getTimeStampResponce(), graphCallback );
+            mSwipeRefreshLayout.setRefreshing(true);
+            menu.collapse();
         });
 
-        Button loadLasted = (Button)view.findViewById(R.id.get_lasted);
-        loadLasted.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                HttpConnectionHandler.getInstance().getRequest(ServiceLatestDataUrl, lastedDataCallback);
-                mSwipeRefreshLayout.setRefreshing(true);
-            }
+        FloatingActionButton loadLasted = view.findViewById(R.id.get_lasted);
+        loadLasted.setOnClickListener(v -> {
+            HttpConnectionHandler.getInstance().getRequest(ServiceLatestDataUrl, lastedDataCallback);
+            mSwipeRefreshLayout.setRefreshing(true);
+            menu.collapse();
         });
         return view;
     }
@@ -267,7 +268,7 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle(R.string.refrigerator);
-        ((MainActivity)getActivity()).getSupportActionBar().setIcon(R.mipmap.refrigerator);
+//        ((MainActivity)getActivity()).getSupportActionBar().setIcon(R.mipmap.refrigerator);
         StartRefresh();
     }
 
@@ -373,37 +374,39 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
+    @SuppressLint("ResourceType")
     private void createLatesValueTable(JSONArray jsonArray){
         if(jsonArray != null){
-            View row1 = lastedTableLayout.findViewById(11);
-            if ( row1 != null ) {
-                lastedTableLayout.removeView(row1);
+            int childCount = lastedTableLayout.getChildCount();
+            if ( childCount > 1 ) {
+                lastedTableLayout.removeViews(1 , childCount - 1);
             }
-            View row2 = lastedTableLayout.findViewById(12);
-            if ( row2 != null ){
-                lastedTableLayout.removeView(row2);
-            }
+            ViewGroup.LayoutParams param = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1.0f
+            );
             for (int i = 0; i < jsonArray.length(); i++) {
                 try{
-                    TableRow tableRow = new TableRow(getContext());
-                    tableRow.setId(11 + i);
-                    tableRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT));
+                    TableRow tableRow = (TableRow) getActivity().getLayoutInflater().inflate(R.layout.refrigerator_table_row, null);
+                    tableRow.setId(R.integer.tableRowId1);
                     JSONObject jObject = jsonArray.getJSONObject(i);
                     String sensName = jObject.getString("sensorName");
                     String sensKind = jObject.getString("sensorKind");
                     JSONArray vals = jObject.getJSONArray("values");
-                    TextView viewSName = new TextView(getContext());
+
+                    TextView viewSName = tableRow.findViewById(R.id.sensName1);
                     viewSName.setText(sensName);
-                    TextView viewSKind = new TextView(getContext());
+
+                    TextView viewSKind = tableRow.findViewById(R.id.sensKind1);
                     viewSKind.setText(sensKind);
-                    TextView viewSValDate = new TextView(getContext());
+
+                    TextView viewSValDate = tableRow.findViewById(R.id.valTime1);
                     viewSValDate.setText(new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).format(new Date(vals.getJSONObject(0).getLong("x"))));
-                    TextView viewSVal = new TextView(getContext());
+
+                    TextView viewSVal = tableRow.findViewById(R.id.val1);
                     viewSVal.setText(vals.getJSONObject(0).getString("y"));
-                    tableRow.addView(viewSName);
-                    tableRow.addView(viewSKind);
-                    tableRow.addView(viewSValDate);
-                    tableRow.addView(viewSVal);
+
                     lastedTableLayout.addView(tableRow, i + 1);
                 }
                 catch (JSONException e) {

@@ -22,6 +22,9 @@ public class HeatingProcessUnit implements IDBHelper {
         this.heating = heating;
         this.date = date;
     }
+    public HeatingProcessUnit(){
+        
+    }
 
     public String getMode() {
         return mode.toString();

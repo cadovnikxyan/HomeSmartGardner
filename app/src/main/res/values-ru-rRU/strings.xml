@@ -6,7 +6,7 @@
     <string name="refrigerator">Холодильник</string>
     <string name="heat_treatment">Термообработка</string>
     <string name="heating_notification_title_template">Нагрев</string>
-    <string name="sausage_maker">Колбасы</string>
+    <string name="sausage_maker">Колбасный калькулятор</string>
     <string name="salting_calculator">Калькулятор посола</string>
     <string name="weight_meat">Вес мяса</string>
     <string name="salting_percent">Процент солености(%)</string>
@@ -28,6 +28,7 @@
     <string name="heating_switch">Нагрев</string>
     <string name="convection">Конвекция</string>
     <string name="current_heating_mode">Текущий режим</string>
-    <string name="value_sensor">Значеие сенсора:</string>
+    <string name="value_sensor">Значение:</string>
     <string name="refrigerator_menu">Холодильник</string>
+    <string name="sausage_notes">Записки</string>
 </resources>

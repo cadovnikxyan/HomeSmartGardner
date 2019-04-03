@@ -1,6 +1,8 @@
-package com.cadovnik.sausagemakerhelper.view;
+package com.cadovnik.sausagemakerhelper.view.fragments;
 
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,8 @@ import android.widget.TextView;
 
 import com.cadovnik.sausagemakerhelper.R;
 import com.cadovnik.sausagemakerhelper.data.SaltingUnit;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.w3c.dom.Text;
@@ -24,12 +28,41 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SausageFragment extends Fragment {
+public class SausageMakerFragment extends Fragment {
 
     private SaltingUnit saltingUnit;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
+    public static class InputFilterMinMax implements InputFilter {
+
+        private double min, max;
+
+        public InputFilterMinMax(double min, double max) {
+            this.min = min;
+            this.max = max;
+        }
+
+        public InputFilterMinMax(String min, String max) {
+            this.min = Double.parseDouble(min);
+            this.max = Double.parseDouble(max);
+        }
+
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            try {
+                double input = Double.parseDouble(dest.toString() + source.toString());
+                if (isInRange(min, max, input))
+                    return null;
+            } catch (NumberFormatException nfe) { }
+            return "";
+        }
+
+        private boolean isInRange(double a, double b, double c) {
+            return b > a ? c >= a && c <= b : c >= b && c <= a;
+        }
+
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -37,7 +70,12 @@ public class SausageFragment extends Fragment {
             return null;
         }
         View view = inflater.inflate(R.layout.sausage_maker, container, false);
-        Button calculate = view.findViewById(R.id.salting_calculate);
+        FloatingActionsMenu menu = view.findViewById(R.id.multiple_actions);
+        FloatingActionButton calculate = view.findViewById(R.id.salting_calculate);
+        TextInputEditText salting = view.findViewById(R.id.salting_percent_value);
+        salting.setFilters(new InputFilter[]{new InputFilterMinMax("0", "100")});
+        TextInputEditText nitrite_salting = view.findViewById(R.id.nitrite_salt_percent_value);
+        nitrite_salting.setFilters(new InputFilter[]{new InputFilterMinMax("0", "100")});
         calculate.setOnClickListener(v -> {
             saltingUnit = new SaltingUnit();
             saltingUnit.setWet_salting(getValue(view, R.id.dry_wet));
@@ -53,12 +91,13 @@ public class SausageFragment extends Fragment {
             result.setLayoutManager(layoutManager);
 
             saltingCalculate(result);
+            menu.collapse();
 
         });
-        Button save = view.findViewById(R.id.salting_save);
+        FloatingActionButton save = view.findViewById(R.id.salting_save);
         save.setOnClickListener( v -> {
             saltingUnit.convert();
-
+            menu.collapse();
         });
         return view;
     }
@@ -98,7 +137,6 @@ public class SausageFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle(R.string.sausage_maker);
-        ((MainActivity)getActivity()).getSupportActionBar().setIcon(R.drawable.salami);
     }
 
     private void saltingCalculate(RecyclerView view){
@@ -107,7 +145,7 @@ public class SausageFragment extends Fragment {
     }
 
     private double getValue(View view, int id, double defaultValue){
-        double result = 0.0;
+        double result;
         try{
             result = Double.valueOf(
                     ((TextInputEditText)view.findViewById(id)).getText().toString()

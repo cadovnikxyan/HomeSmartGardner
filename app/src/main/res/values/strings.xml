@@ -14,7 +14,7 @@
     <string name="action_share" translatable="false">Share</string>
     <string name="action_reply" translatable="false">Reply</string>
     <string name="esp_hostname" translatable="false">cadovnik_esp8266.local</string>
-    <string name="sausage_maker">Sausage</string>
+    <string name="sausage_maker">Sausage Calculator</string>
     <string name="salting_calculator">Salting Calculator</string>
     <string name="weight_meat">Weight of meat</string>
     <string name="salting_percent">Salting percent(%)</string>
@@ -40,4 +40,5 @@
     <string name="current_heating_mode">Current Mode</string>
     <string name="value_sensor">Value:</string>
     <string name="refrigerator_menu">Refrigerator</string>
+    <string name="sausage_notes">Sausage Notes</string>
 </resources>
