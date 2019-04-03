@@ -1,33 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/sausage_notes_pager"
+        style="@style/Widget.MaterialComponents.TabLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/sausage_notes_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <com.github.florent37.materialviewpager.MaterialViewPager
-        android:id="@+id/noteBook_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimary"
-        app:viewpager_animatedHeaderImage="true"
-        app:viewpager_color="@color/colorPrimary"
-        app:viewpager_disableToolbar="true"
-        app:viewpager_displayToolbarWhenSwipe="true"
-        app:viewpager_enableToolbarElevation="true"
-        app:viewpager_headerAdditionalHeight="20dp"
-        app:viewpager_headerAlpha="1.0"
-        app:viewpager_headerHeight="200dp"
-        app:viewpager_hideLogoWithFade="true"
-        app:viewpager_hideToolbarAndTitle="true"
-        app:viewpager_logo="@layout/header_logo"
-        app:viewpager_logoMarginTop="100dp"
-        app:viewpager_pagerTitleStrip="@layout/notes_tabs"
-        app:viewpager_parallaxHeaderFactor="1.5"
-        app:viewpager_imageHeaderDarkLayerAlpha="0.2"
-        app:viewpager_transparentToolbar="true"
-        />
+            <com.google.android.material.tabs.TabItem
+                android:icon="@drawable/salamis"
+                android:text="@string/sausage_notes"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+            <com.google.android.material.tabs.TabItem
+                android:icon="@drawable/round_sausage"
+                android:text="@string/sausage_calendar"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+
+        </com.google.android.material.tabs.TabLayout>
+    </androidx.viewpager.widget.ViewPager>
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/multiple_actions"
         android:layout_width="wrap_content"

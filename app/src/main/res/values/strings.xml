@@ -41,4 +41,5 @@
     <string name="value_sensor">Value:</string>
     <string name="refrigerator_menu">Refrigerator</string>
     <string name="sausage_notes">Sausage Notes</string>
+    <string name="sausage_calendar">Calendar</string>
 </resources>

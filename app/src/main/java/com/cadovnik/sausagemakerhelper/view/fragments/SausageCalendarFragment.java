@@ -1,34 +1,35 @@
 package com.cadovnik.sausagemakerhelper.view.fragments;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.cadovnik.sausagemakerhelper.R;
-import com.cadovnik.sausagemakerhelper.view.MainActivity;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-@SuppressLint("ValidFragment")
-public class MainFragment extends Fragment {
+public class SausageCalendarFragment extends Fragment {
+
+    public static SausageCalendarFragment newInstance() {
+        SausageCalendarFragment fragment = new SausageCalendarFragment();
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (container == null) {
             return null;
         }
-        return  inflater.inflate(R.layout.content_main, container, false);
+        View view = inflater.inflate(R.layout.sausage_calendar, container, false);
+        return view;
     }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
-        getActivity().setTitle(R.string.main);
-        ((MainActivity)getActivity()).getSupportActionBar().setIcon(R.drawable.ic_menu_manage);
+//        getActivity().setTitle(R.string.sausage_calendar);
     }
-
-
 }

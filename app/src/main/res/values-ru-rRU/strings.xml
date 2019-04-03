@@ -31,4 +31,5 @@
     <string name="value_sensor">Значение:</string>
     <string name="refrigerator_menu">Холодильник</string>
     <string name="sausage_notes">Записки</string>
+    <string name="sausage_calendar">Календарь</string>
 </resources>
