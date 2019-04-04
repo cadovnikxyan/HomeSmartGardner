@@ -13,14 +13,16 @@ public class HeatingProcessUnit implements IDBHelper {
     private Boolean heating = false;
     private Date date;
     private long DBTableId = -1;
+    private long heating_process_id = -1;
 
-    public HeatingProcessUnit(HeatingModes mode, double probe_temp, double temp, Boolean convection, Boolean heating, Date date){
+    public HeatingProcessUnit(HeatingModes mode, double probe_temp, double temp, Boolean convection, Boolean heating, Date date, long heating_process_id){
         this.mode = mode;
         this.probe_temp = probe_temp;
         this.temp = temp;
         this.convection = convection;
         this.heating = heating;
         this.date = date;
+        this.heating_process_id = heating_process_id;
     }
     public HeatingProcessUnit(){
         
@@ -85,6 +87,7 @@ public class HeatingProcessUnit implements IDBHelper {
         values.put(DataContract.HeatingProcessUnitDB.COLUMN_HEATING, heating);
         values.put(DataContract.HeatingProcessUnitDB.COLUMN_CONVECTION, convection);
         values.put(DataContract.HeatingProcessUnitDB.COLUMN_TIMESTAMP, date.toString());
+        values.put(DataContract.HeatingProcessUnitDB.COLUMN_HEATING_PROCESS_ID, String.valueOf(heating_process_id));
         return values;
     }
 
@@ -94,4 +97,11 @@ public class HeatingProcessUnit implements IDBHelper {
         return DBTableId;
     }
 
+    public void setHeating_process_id(long heating_process_id) {
+        this.heating_process_id = heating_process_id;
+    }
+
+    public long getHeating_process_id() {
+        return heating_process_id;
+    }
 }

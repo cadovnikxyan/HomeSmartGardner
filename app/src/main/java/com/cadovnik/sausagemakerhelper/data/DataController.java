@@ -1,8 +1,10 @@
 package com.cadovnik.sausagemakerhelper.data;
 
 import android.content.Context;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -16,7 +18,13 @@ public class DataController extends SQLiteOpenHelper {
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+        Log.d(LOG_TAG, "--- onCreate database ---");
+        createTable(db, DataContract.HeatingProcessDB.createTableString());
+        createTable(db, DataContract.HeatingProcessUnitDB.createTableString());
+        createTable(db, DataContract.HeatingProcessHistoryDB.createTableString());
+        createTable(db, DataContract.SaltingHistoryDB.createTableString());
+        createTable(db, DataContract.SaltingUnitDB.createTableString());
+        createTable(db, DataContract.SausageNoteDB.createTableString());
     }
 
     @Override
@@ -25,6 +33,15 @@ public class DataController extends SQLiteOpenHelper {
     }
     @Override
     public void onOpen(SQLiteDatabase db){
+
+    }
+
+    private void createTable(SQLiteDatabase db, String table){
+        try{
+            db.execSQL(table);
+        }catch (SQLException e){
+            Log.e(e.getClass().toString(), "Error: " + e.toString());
+        }
 
     }
 }

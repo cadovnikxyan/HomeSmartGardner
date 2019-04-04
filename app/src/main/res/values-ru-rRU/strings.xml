@@ -32,4 +32,6 @@
     <string name="refrigerator_menu">Холодильник</string>
     <string name="sausage_notes">Записки</string>
     <string name="sausage_calendar">Календарь</string>
+    <string name="sausage_archive">Архив</string>
+    <string name="create_sausage">Создать колбасу</string>
 </resources>

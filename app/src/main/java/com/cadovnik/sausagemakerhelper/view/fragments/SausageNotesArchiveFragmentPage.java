@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cadovnik.sausagemakerhelper.R;
-import com.cadovnik.sausagemakerhelper.data.SausageNotes;
 import com.google.android.material.card.MaterialCardView;
 
 import androidx.annotation.NonNull;
@@ -15,14 +14,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SausageNotesFragmentPage extends Fragment {
-    public static SausageNotesFragmentPage instance = null;
-    public static SausageNotesFragmentPage newInstance() {
+public class SausageNotesArchiveFragmentPage extends Fragment {
+
+    public static SausageNotesArchiveFragmentPage instance = null;
+    public static SausageNotesArchiveFragmentPage newInstance() {
         if (instance == null )
-            instance = new SausageNotesFragmentPage();
+            instance = new SausageNotesArchiveFragmentPage();
         return instance;
     }
-    private SausageNotes notes;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -31,8 +30,7 @@ public class SausageNotesFragmentPage extends Fragment {
         }
         View view = inflater.inflate(R.layout.sausage_notes, container, false);
         RecyclerView rlay = view.findViewById(R.id.sausage_notes_page);
-        notes = new SausageNotes();
-        rlay.setAdapter(new SausageNotesFragmentPage.SausageNotesAdapter(notes));
+        rlay.setAdapter(new SausageNotesArchiveFragmentPage.SausageNotesArchiveAdapter());
         rlay.setLayoutManager( new LinearLayoutManager(getActivity()) );
         return view;
     }
@@ -41,32 +39,29 @@ public class SausageNotesFragmentPage extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
-//        getActivity().setTitle(R.string.sausage_notes);
     }
 
-    public static class SausageNotesAdapter extends RecyclerView.Adapter<SausageNotesFragmentPage.SausageNotesAdapter.ViewHolder> {
+    public static class SausageNotesArchiveAdapter extends RecyclerView.Adapter<SausageNotesArchiveFragmentPage.SausageNotesArchiveAdapter.ViewHolder> {
 
-        private SausageNotes notes;
-        public SausageNotesAdapter(SausageNotes notes) {
-            this.notes = notes;
+        public SausageNotesArchiveAdapter( ) {
         }
 
         @NonNull
         @Override
-        public SausageNotesFragmentPage.SausageNotesAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public SausageNotesArchiveFragmentPage.SausageNotesArchiveAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View card = LayoutInflater.from(parent.getContext()).inflate(R.layout.sausage_card, parent, false);
-            SausageNotesFragmentPage.SausageNotesAdapter.ViewHolder v = new SausageNotesFragmentPage.SausageNotesAdapter.ViewHolder(card);
+            SausageNotesArchiveFragmentPage.SausageNotesArchiveAdapter.ViewHolder v = new SausageNotesArchiveFragmentPage.SausageNotesArchiveAdapter.ViewHolder(card);
             return v;
         }
 
         @Override
-        public void onBindViewHolder(@NonNull SausageNotesFragmentPage.SausageNotesAdapter.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull SausageNotesArchiveFragmentPage.SausageNotesArchiveAdapter.ViewHolder holder, int position) {
 //            holder.cardView.setText(data.get(position));
         }
 
         @Override
         public int getItemCount() {
-            return notes.getCount();
+            return 5;
         }
 
         public static class ViewHolder extends RecyclerView.ViewHolder {

@@ -73,19 +73,19 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void displaySelectedScreen(int itemId) {
+    public void displaySelectedScreen(int itemId) {
 
         //creating fragment object
         Fragment fragment = null;
 
         if (itemId == R.id.nav_refrigerator) {
-            fragment = new RefigeratorFragment();
+            fragment = RefigeratorFragment.newInstance();
         } else if (itemId == R.id.sausage_maker) {
-            fragment = new SausageMakerFragment();
+            fragment = SausageMakerFragment.newInstance();
         } else if ( itemId == R.id.nav_heat_treatment) {
-            fragment = new HeatTreatmentFragment();
+            fragment = HeatTreatmentFragment.newInstance();
         } else if ( itemId == R.id.sausage_notebooks){
-            fragment = new SausageNoteBookFragment();
+            fragment = SausageNoteBookFragment.newInstance();
         }
 
         //replacing the fragment

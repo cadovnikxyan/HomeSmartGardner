@@ -9,7 +9,6 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -44,7 +43,6 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import okhttp3.Call;
@@ -146,6 +144,14 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
 
     private static final String DateFormat = "MM/dd/yyyy";
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private static RefigeratorFragment instance = null;
+    public static RefigeratorFragment newInstance(){
+        if ( instance == null )
+            instance = new RefigeratorFragment();
+
+        return instance;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

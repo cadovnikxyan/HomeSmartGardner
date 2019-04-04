@@ -42,4 +42,6 @@
     <string name="refrigerator_menu">Refrigerator</string>
     <string name="sausage_notes">Sausage Notes</string>
     <string name="sausage_calendar">Calendar</string>
+    <string name="sausage_archive">Archive</string>
+    <string name="create_sausage">Make sausage</string>
 </resources>

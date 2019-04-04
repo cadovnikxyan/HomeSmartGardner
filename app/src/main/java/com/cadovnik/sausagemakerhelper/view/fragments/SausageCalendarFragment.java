@@ -12,9 +12,11 @@ import androidx.fragment.app.Fragment;
 
 public class SausageCalendarFragment extends Fragment {
 
+    public static SausageCalendarFragment instance = null;
     public static SausageCalendarFragment newInstance() {
-        SausageCalendarFragment fragment = new SausageCalendarFragment();
-        return fragment;
+        if (instance == null )
+            instance = new SausageCalendarFragment();
+        return instance;
     }
 
     @Override

@@ -1,31 +1,28 @@
 package com.cadovnik.sausagemakerhelper.view.fragments;
 
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.cadovnik.sausagemakerhelper.R;
+import com.cadovnik.sausagemakerhelper.data.DataController;
 import com.cadovnik.sausagemakerhelper.data.SaltingUnit;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.textfield.TextInputEditText;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SausageMakerFragment extends Fragment {
@@ -63,6 +60,14 @@ public class SausageMakerFragment extends Fragment {
         }
 
     }
+
+    private static SausageMakerFragment instance = null;
+    public static SausageMakerFragment newInstance(){
+        if ( instance == null )
+            instance = new SausageMakerFragment();
+
+        return instance;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -96,7 +101,9 @@ public class SausageMakerFragment extends Fragment {
         });
         FloatingActionButton save = view.findViewById(R.id.salting_save);
         save.setOnClickListener( v -> {
-            saltingUnit.convert();
+            ContentValues values = saltingUnit.convert();
+            DataController db = new DataController(getContext());
+            saltingUnit.insert(db.getWritableDatabase(), values);
             menu.collapse();
         });
         return view;

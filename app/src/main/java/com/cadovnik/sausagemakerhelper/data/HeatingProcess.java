@@ -10,13 +10,14 @@ import java.util.List;
 
 public class HeatingProcess implements IDBHelper {
 
-    private List<HeatingProcessUnit> unitList = new ArrayList<HeatingProcessUnit>();
+    private List<HeatingProcessUnit> unitList;
     private Date startDate = new Date();
     private Date stopDate = new Date();
     private HeatingStatus status = HeatingStatus.HEATING_INPROGRESS;
     private SQLiteDatabase db = null;
     public HeatingProcess(SQLiteDatabase db){
         this.db = db;
+        unitList = new ArrayList<>();
     }
 
     public void start(){
@@ -29,8 +30,8 @@ public class HeatingProcess implements IDBHelper {
         insert(db, convert());
     }
 
-    public void addUnit(HeatingModes mode, double probe_temp, double temp, Boolean convection, Boolean heating) {
-        HeatingProcessUnit unit = new HeatingProcessUnit(mode, probe_temp, temp, convection, heating, Calendar.getInstance().getTime());
+    public void addUnit(HeatingModes mode, double probe_temp, double temp, Boolean convection, Boolean heating, long id) {
+        HeatingProcessUnit unit = new HeatingProcessUnit(mode, probe_temp, temp, convection, heating, Calendar.getInstance().getTime(), id);
         unitList.add(unit);
     }
 

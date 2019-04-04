@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.cadovnik.sausagemakerhelper.R;
@@ -22,6 +21,14 @@ import androidx.fragment.app.Fragment;
 public class HeatTreatmentFragment extends Fragment {
     private AlertDialog.Builder builder;
     private final String[] modes ={"Home", "SmokeHouse", "History"};
+    private static HeatTreatmentFragment instance = null;
+    public static HeatTreatmentFragment newInstance(){
+        if ( instance == null )
+            instance = new HeatTreatmentFragment();
+
+        return instance;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

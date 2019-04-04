@@ -71,7 +71,7 @@ public class SaltingUnit implements IDBHelper  {
         values.put(DataContract.SaltingUnitDB.COLUMN_SODIUM_ASCORBATE_WEIGHT, sodium_ascorbate);
         values.put(DataContract.SaltingUnitDB.COLUMN_SAUSAGE_NAME, sausage_name);
         values.put(DataContract.SaltingUnitDB.COLUMN_DATE, date.toString());
-        return null;
+        return values;
     }
 
     @Override
