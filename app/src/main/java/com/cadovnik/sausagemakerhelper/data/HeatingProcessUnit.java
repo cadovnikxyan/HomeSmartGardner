@@ -97,6 +97,11 @@ public class HeatingProcessUnit implements IDBHelper {
         return DBTableId;
     }
 
+    @Override
+    public int getId() {
+        return 0;
+    }
+
     public void setHeating_process_id(long heating_process_id) {
         this.heating_process_id = heating_process_id;
     }

@@ -25,6 +25,11 @@ public class HeatingProcessHistory implements IDBHelper {
         return 0;
     }
 
+    @Override
+    public int getId() {
+        return 0;
+    }
+
     public List<HeatingProcess> restoreUnits(){
         List<HeatingProcess> list = new ArrayList<>();
         String[] columns = new String[2];

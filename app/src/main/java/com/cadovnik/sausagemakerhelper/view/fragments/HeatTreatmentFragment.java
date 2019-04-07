@@ -32,10 +32,6 @@ public class HeatTreatmentFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        if (container == null) {
-            return null;
-        }
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.heat_treatment, container, false);
         builder = new AlertDialog.Builder(getContext());

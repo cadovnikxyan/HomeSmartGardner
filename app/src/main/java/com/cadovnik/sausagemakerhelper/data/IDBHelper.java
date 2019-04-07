@@ -6,4 +6,5 @@ import android.database.sqlite.SQLiteDatabase;
 public interface IDBHelper {
     ContentValues convert();
     long insert(SQLiteDatabase db, ContentValues values);
+    int getId();
 }

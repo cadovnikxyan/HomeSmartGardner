@@ -19,23 +19,6 @@
             android:layout_height="wrap_content"
             app:tabMode="fixed">
 
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/salamis"
-                android:text="@string/sausage_notes" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/calendar"
-                android:text="@string/sausage_calendar" />
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/archive"
-                android:text="@string/sausage_archive" />
-
         </com.google.android.material.tabs.TabLayout>
     </androidx.viewpager.widget.ViewPager>
     <com.getbase.floatingactionbutton.FloatingActionsMenu

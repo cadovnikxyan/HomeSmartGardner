@@ -34,4 +34,10 @@
     <string name="sausage_calendar">Календарь</string>
     <string name="sausage_archive">Архив</string>
     <string name="create_sausage">Создать колбасу</string>
+    <string name="sausage_card_description">Рецепт</string>
+    <string name="sausage_name">Название колбасы:</string>
+    <string name="sausage_spice_name">Назвение специи</string>
+    <string name="sausage_spice_weight">Вес специи</string>
+    <string name="save_sausage_dialog_title">Сохранить колбасу</string>
+    <string name="sausage_add_spice">Добавить специю</string>
 </resources>

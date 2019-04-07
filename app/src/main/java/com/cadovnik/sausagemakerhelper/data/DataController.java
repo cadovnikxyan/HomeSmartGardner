@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 public class DataController extends SQLiteOpenHelper {
     public static final String LOG_TAG = DataController.class.getSimpleName();
     private static final String DATABASE_NAME = "sausagemakerhelper.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 8;
 
     public DataController(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -29,8 +29,15 @@ public class DataController extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.execSQL("DROP TABLE IF EXISTS " +  DataContract.HeatingProcessDB.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " +  DataContract.HeatingProcessUnitDB.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " +  DataContract.HeatingProcessHistoryDB.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " +  DataContract.SaltingHistoryDB.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " +  DataContract.SaltingUnitDB.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " +  DataContract.SausageNoteDB.TABLE_NAME);
+        onCreate(db);
     }
+
     @Override
     public void onOpen(SQLiteDatabase db){
 

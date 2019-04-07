@@ -13,4 +13,9 @@ public class SaltingHistory implements IDBHelper {
     public long insert(SQLiteDatabase db, ContentValues values) {
         return 0;
     }
+
+    @Override
+    public int getId() {
+        return 0;
+    }
 }

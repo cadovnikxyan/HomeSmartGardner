@@ -1,6 +1,7 @@
 package com.cadovnik.sausagemakerhelper.view.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,7 @@ import androidx.fragment.app.Fragment;
 
 public class SausageCalendarFragment extends Fragment {
 
-    public static SausageCalendarFragment instance = null;
+    private static SausageCalendarFragment instance = null;
     public static SausageCalendarFragment newInstance() {
         if (instance == null )
             instance = new SausageCalendarFragment();
@@ -20,12 +21,18 @@ public class SausageCalendarFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        Log.d(this.getClass().getSimpleName(), "onCreate: ");
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (container == null) {
-            return null;
-        }
+        super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.sausage_calendar, container, false);
+        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
         return view;
     }
     @Override
@@ -34,4 +41,10 @@ public class SausageCalendarFragment extends Fragment {
         //you can set the title for your toolbar here for different fragments different titles
 //        getActivity().setTitle(R.string.sausage_calendar);
     }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(this.getClass().getSimpleName(), "onDestroy: ");
+    }
+
 }

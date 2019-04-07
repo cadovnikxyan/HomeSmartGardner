@@ -1,6 +1,5 @@
 package com.cadovnik.sausagemakerhelper.view.fragments;
 
-import android.content.ContentValues;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -11,8 +10,8 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.cadovnik.sausagemakerhelper.R;
-import com.cadovnik.sausagemakerhelper.data.DataController;
 import com.cadovnik.sausagemakerhelper.data.SaltingUnit;
+import com.cadovnik.sausagemakerhelper.view.dialogs.SaveSausageDialog;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.textfield.TextInputEditText;
@@ -71,9 +70,7 @@ public class SausageMakerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (container == null) {
-            return null;
-        }
+        super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.sausage_maker, container, false);
         FloatingActionsMenu menu = view.findViewById(R.id.multiple_actions);
         FloatingActionButton calculate = view.findViewById(R.id.salting_calculate);
@@ -81,6 +78,7 @@ public class SausageMakerFragment extends Fragment {
         salting.setFilters(new InputFilter[]{new InputFilterMinMax("0", "100")});
         TextInputEditText nitrite_salting = view.findViewById(R.id.nitrite_salt_percent_value);
         nitrite_salting.setFilters(new InputFilter[]{new InputFilterMinMax("0", "100")});
+        saltingUnit = new SaltingUnit();
         calculate.setOnClickListener(v -> {
             saltingUnit = new SaltingUnit();
             saltingUnit.setWet_salting(getValue(view, R.id.dry_wet));
@@ -101,9 +99,8 @@ public class SausageMakerFragment extends Fragment {
         });
         FloatingActionButton save = view.findViewById(R.id.salting_save);
         save.setOnClickListener( v -> {
-            ContentValues values = saltingUnit.convert();
-            DataController db = new DataController(getContext());
-            saltingUnit.insert(db.getWritableDatabase(), values);
+            SaveSausageDialog dialog = new SaveSausageDialog(saltingUnit);
+            dialog.show(getFragmentManager(), "SAVE_SAUSAGE");
             menu.collapse();
         });
         return view;

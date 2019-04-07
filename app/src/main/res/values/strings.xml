@@ -44,4 +44,10 @@
     <string name="sausage_calendar">Calendar</string>
     <string name="sausage_archive">Archive</string>
     <string name="create_sausage">Make sausage</string>
+    <string name="sausage_card_description">Recipe</string>
+    <string name="sausage_name">Sausage Name:</string>
+    <string name="sausage_spice_name">Spice Name</string>
+    <string name="sausage_spice_weight">Spice weight</string>
+    <string name="save_sausage_dialog_title">Save Sausage</string>
+    <string name="sausage_add_spice">Add Spice</string>
 </resources>

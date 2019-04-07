@@ -1,11 +1,15 @@
 package com.cadovnik.sausagemakerhelper.view.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.cadovnik.sausagemakerhelper.R;
+import com.cadovnik.sausagemakerhelper.data.HeatingProcess;
+import com.cadovnik.sausagemakerhelper.data.SaltingUnit;
 import com.cadovnik.sausagemakerhelper.data.SausageNotes;
 import com.google.android.material.card.MaterialCardView;
 
@@ -16,32 +20,43 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SausageNotesFragmentPage extends Fragment {
-    public static SausageNotesFragmentPage instance = null;
+    private static SausageNotesFragmentPage instance = null;
     public static SausageNotesFragmentPage newInstance() {
         if (instance == null )
             instance = new SausageNotesFragmentPage();
         return instance;
     }
     private SausageNotes notes;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        Log.d(this.getClass().getSimpleName(), "onCreate: ");
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (container == null) {
-            return null;
-        }
+        super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.sausage_notes, container, false);
         RecyclerView rlay = view.findViewById(R.id.sausage_notes_page);
-        notes = new SausageNotes();
+        notes = new SausageNotes(getContext());
         rlay.setAdapter(new SausageNotesFragmentPage.SausageNotesAdapter(notes));
         rlay.setLayoutManager( new LinearLayoutManager(getActivity()) );
+        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //you can set the title for your toolbar here for different fragments different titles
-//        getActivity().setTitle(R.string.sausage_notes);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(this.getClass().getSimpleName(), "onDestroy: ");
     }
 
     public static class SausageNotesAdapter extends RecyclerView.Adapter<SausageNotesFragmentPage.SausageNotesAdapter.ViewHolder> {
@@ -61,7 +76,18 @@ public class SausageNotesFragmentPage extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull SausageNotesFragmentPage.SausageNotesAdapter.ViewHolder holder, int position) {
-//            holder.cardView.setText(data.get(position));
+            TextView title = holder.cardView.findViewById(R.id.sausage_title);
+            title.setText(notes.At(position).getName());
+            TextView description = holder.cardView.findViewById(R.id.sausage_description);
+            description.setText(notes.At(position).getDescription());
+            holder.setSaltingInfo(notes.At(position).getSalting());
+            holder.setHeatingInfo(notes.At(position).getHeating());
+//            ImageView image = holder.cardView.findViewById(R.id.sausage_image);
+//            Bitmap bitmap = notes.At(position).getBitmap();
+//            holder.cardView.getViewTreeObserver().addOnGlobalLayoutListener(
+//                    () -> {
+//                        image.setImageBitmap(Bitmap.createScaledBitmap(bitmap, holder.cardView.getWidth(), image.getHeight(),false));
+//                    });
         }
 
         @Override
@@ -75,6 +101,15 @@ public class SausageNotesFragmentPage extends Fragment {
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 cardView = itemView.findViewById(R.id.sausage_card);
+
+            }
+
+            public void setSaltingInfo(SaltingUnit salting){
+
+            }
+
+            public void setHeatingInfo(HeatingProcess process){
+
             }
         }
     }

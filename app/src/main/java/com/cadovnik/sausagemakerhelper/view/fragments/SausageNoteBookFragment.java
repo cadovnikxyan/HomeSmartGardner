@@ -1,11 +1,8 @@
 package com.cadovnik.sausagemakerhelper.view.fragments;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,17 +27,26 @@ public class SausageNoteBookFragment extends Fragment {
 
         return instance;
     }
+    protected static String tabTitles[];
+    private SausageNoteBookFragmentPagerAdapter adapter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        tabTitles = new String[] {getResources().getString(R.string.sausage_notes), getResources().getString(R.string.sausage_calendar), getResources().getString(R.string.sausage_archive)};
+        adapter = new SausageNoteBookFragmentPagerAdapter(getFragmentManager(), getContext());
+        Log.d(this.getClass().getSimpleName(), "onCreate: ");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (container == null) {
-            return null;
-        }
+        super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.sausage_notebook, container, false);
         TabLayout tabs = view.findViewById(R.id.sausage_notes_tabs);
         ViewPager pager = view.findViewById(R.id.sausage_notes_pager);
-        pager.setAdapter(new SausageNoteBookFragmentPagerAdapter(getFragmentManager(), getContext()));
+        pager.setOffscreenPageLimit(3);
+        pager.setAdapter(adapter);
         tabs.setupWithViewPager(pager);
         FloatingActionsMenu menu = view.findViewById(R.id.multiple_actions);
         FloatingActionButton create_sausage = view.findViewById(R.id.create_sausage);
@@ -48,33 +54,35 @@ public class SausageNoteBookFragment extends Fragment {
             menu.collapse();
             ((MainActivity)getActivity()).displaySelectedScreen(R.id.sausage_maker);
         });
+        tabs.getTabAt(0).setIcon(R.drawable.salamis);
+        tabs.getTabAt(1).setIcon(R.drawable.calendar);
+        tabs.getTabAt(2).setIcon(R.drawable.archive);
+        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
         return view;
     }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle(R.string.sausage_notes);
+
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(this.getClass().getSimpleName(), "onDestroy: ");
     }
 
     public static class SausageNoteBookFragmentPagerAdapter extends FragmentPagerAdapter {
-        final int PAGE_COUNT = 3;
         private Context context;
-        private String tabTitles[];
-        private int[] imageResId = {
-                R.drawable.salamis,
-                R.drawable.calendar,
-                R.drawable.archive,
-        };
         public SausageNoteBookFragmentPagerAdapter(FragmentManager fm, Context context) {
             super(fm);
             this.context = context;
-            tabTitles = new String[] {context.getResources().getString(R.string.sausage_notes), context.getResources().getString(R.string.sausage_calendar), context.getResources().getString(R.string.sausage_archive)};
+
         }
 
         @Override
         public int getCount() {
-            return tabTitles.length;
+            return SausageNoteBookFragment.tabTitles.length;
         }
 
         @Override
@@ -91,12 +99,7 @@ public class SausageNoteBookFragment extends Fragment {
         }
         @Override
         public CharSequence getPageTitle(int position) {
-            Drawable image = context.getResources().getDrawable(imageResId[position]);
-            image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
-            SpannableString sb = new SpannableString(tabTitles[position]);
-            ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
-            sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            return sb;
+            return SausageNoteBookFragment.tabTitles[position];
         }
     }
 }

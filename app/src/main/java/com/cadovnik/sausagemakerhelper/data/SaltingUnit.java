@@ -26,10 +26,27 @@ public class SaltingUnit implements IDBHelper  {
     private boolean with_sodium_ascorbate = false;
     private String sausage_name = "";
     private Date date = new Date();
+    private int id = -1;
     private long DBTableId;
 
     public SaltingUnit(){
 
+    }
+
+    public SaltingUnit(ContentValues values){
+        id = Integer.valueOf(values.get(DataContract.SaltingUnitDB._ID).toString());
+        brine = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_BRINE_WEIGHT).toString());
+        if ( brine != 0 )
+            wet_salting = true;
+        weight_of_meat = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_MEAT_WEIGHT).toString());
+        rock_salt = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_ROCK_SALT_WEIGHT).toString());
+        nitrite_salt = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_NITRITE_SALT_WEIGHT).toString());
+        phosphates = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_PHOSPHATES_WEIGHT).toString());
+        with_phosphates = phosphates > 0;
+        sodium_ascorbate = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_SODIUM_ASCORBATE_WEIGHT).toString());
+        with_sodium_ascorbate = sodium_ascorbate > 0;
+        sausage_name = values.get(DataContract.SaltingUnitDB.COLUMN_SAUSAGE_NAME).toString();
+        date = new Date(values.get(DataContract.SaltingUnitDB.COLUMN_DATE).toString());
     }
 
     public List<String> calculate(){
@@ -63,6 +80,7 @@ public class SaltingUnit implements IDBHelper  {
     @Override
     public ContentValues convert() {
         ContentValues values = new ContentValues();
+//        values.put(DataContract.SaltingUnitDB._ID, getId());
         values.put(DataContract.SaltingUnitDB.COLUMN_BRINE_WEIGHT, brine);
         values.put(DataContract.SaltingUnitDB.COLUMN_MEAT_WEIGHT, weight_of_meat);
         values.put(DataContract.SaltingUnitDB.COLUMN_ROCK_SALT_WEIGHT, rock_salt);
@@ -182,5 +200,17 @@ public class SaltingUnit implements IDBHelper  {
 
     public Date getDate() {
         return date;
+    }
+
+    public int getId() {
+        if ( id == -1 )
+            createId();
+
+        return id;
+    }
+
+    public void createId(){
+        if (id != -1)
+            id = this.hashCode();
     }
 }

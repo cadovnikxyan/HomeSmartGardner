@@ -1,6 +1,7 @@
 package com.cadovnik.sausagemakerhelper.view.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,22 +17,29 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class SausageNotesArchiveFragmentPage extends Fragment {
 
-    public static SausageNotesArchiveFragmentPage instance = null;
+    private static SausageNotesArchiveFragmentPage instance = null;
     public static SausageNotesArchiveFragmentPage newInstance() {
         if (instance == null )
             instance = new SausageNotesArchiveFragmentPage();
         return instance;
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        Log.d(this.getClass().getSimpleName(), "onCreate: ");
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (container == null) {
-            return null;
-        }
+        super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.sausage_notes, container, false);
         RecyclerView rlay = view.findViewById(R.id.sausage_notes_page);
         rlay.setAdapter(new SausageNotesArchiveFragmentPage.SausageNotesArchiveAdapter());
         rlay.setLayoutManager( new LinearLayoutManager(getActivity()) );
+        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
         return view;
     }
 
@@ -39,6 +47,11 @@ public class SausageNotesArchiveFragmentPage extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(this.getClass().getSimpleName(), "onDestroy: ");
     }
 
     public static class SausageNotesArchiveAdapter extends RecyclerView.Adapter<SausageNotesArchiveFragmentPage.SausageNotesArchiveAdapter.ViewHolder> {
@@ -58,6 +71,7 @@ public class SausageNotesArchiveFragmentPage extends Fragment {
         public void onBindViewHolder(@NonNull SausageNotesArchiveFragmentPage.SausageNotesArchiveAdapter.ViewHolder holder, int position) {
 //            holder.cardView.setText(data.get(position));
         }
+
 
         @Override
         public int getItemCount() {

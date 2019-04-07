@@ -156,10 +156,6 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        if (container == null) {
-            return null;
-        }
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.refrigerate_chart, container, false);
         HttpConnectionHandler.Initialize(getActivity().getResources().openRawResource(R.raw.certificate));

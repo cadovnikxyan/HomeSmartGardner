@@ -1,15 +1,20 @@
 package com.cadovnik.sausagemakerhelper.data;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+
 public class SausageNotes implements IDBHelper {
     private List<SausageNote> notes = new ArrayList<>();
-
-    public SausageNotes(){
+    private DataController controller;
+    public SausageNotes(@Nullable Context context){
+        controller = new DataController(context);
+        notes = DataFactory.RestoreSausageNotes(controller.getWritableDatabase());
 
     }
 
@@ -23,35 +28,15 @@ public class SausageNotes implements IDBHelper {
         return 0;
     }
 
+    @Override
+    public int getId() {
+        return 0;
+    }
+
     public int getCount(){
         return notes.size();
     }
-
-    public static class SausageNote {
-        private String name;
-        private SaltingUnit salting;
-        private HeatingProcess heating;
-
-        public SausageNote(String name, SaltingUnit salting, HeatingProcess heating){
-            this.name = name;
-            this.salting = salting;
-            this.heating = heating;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public SaltingUnit getSalting() {
-            return salting;
-        }
-
-        public HeatingProcess getHeating() {
-            return heating;
-        }
+    public SausageNote At(int i){
+        return notes.get(i);
     }
 }

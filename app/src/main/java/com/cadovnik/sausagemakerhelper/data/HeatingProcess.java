@@ -20,6 +20,10 @@ public class HeatingProcess implements IDBHelper {
         unitList = new ArrayList<>();
     }
 
+    public HeatingProcess(ContentValues values){
+
+    }
+
     public void start(){
         startDate = Calendar.getInstance().getTime();
     }
@@ -57,6 +61,11 @@ public class HeatingProcess implements IDBHelper {
     @Override
     public long insert(SQLiteDatabase db, ContentValues values) {
         return db.insert(DataContract.HeatingProcessDB.TABLE_NAME, null, values);
+    }
+
+    @Override
+    public int getId() {
+        return 0;
     }
 
     public void setStatus(HeatingStatus status) {
