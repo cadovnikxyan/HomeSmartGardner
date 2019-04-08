@@ -13,6 +13,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.tabs.TabLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -28,7 +29,7 @@ public class SausageNoteBookFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         tabTitles = new String[] {getResources().getString(R.string.sausage_notes), getResources().getString(R.string.sausage_calendar), getResources().getString(R.string.sausage_archive)};
-        adapter = new SausageNoteBookFragmentPagerAdapter(getFragmentManager(), getContext());
+        adapter = new SausageNoteBookFragmentPagerAdapter(getChildFragmentManager(), getContext());
         Log.d(this.getClass().getSimpleName(), "onCreate: ");
     }
 
@@ -37,7 +38,13 @@ public class SausageNoteBookFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.sausage_notebook, container, false);
-
+        TabLayout tabs = view.findViewById(R.id.sausage_notes_tabs);
+        ViewPager pager = view.findViewById(R.id.sausage_notes_pager);
+        tabs.setupWithViewPager(pager);
+        pager.setAdapter(adapter);
+        tabs.getTabAt(0).setIcon(R.drawable.salamis);
+        tabs.getTabAt(1).setIcon(R.drawable.calendar);
+        tabs.getTabAt(2).setIcon(R.drawable.archive);
         FloatingActionsMenu menu = view.findViewById(R.id.multiple_actions);
         FloatingActionButton create_sausage = view.findViewById(R.id.create_sausage);
         create_sausage.setOnClickListener(v -> {
@@ -51,13 +58,6 @@ public class SausageNoteBookFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        TabLayout tabs = view.findViewById(R.id.sausage_notes_tabs);
-        ViewPager pager = view.findViewById(R.id.sausage_notes_pager);
-        tabs.setupWithViewPager(pager);
-        pager.setAdapter(adapter);
-        tabs.getTabAt(0).setIcon(R.drawable.salamis);
-        tabs.getTabAt(1).setIcon(R.drawable.calendar);
-        tabs.getTabAt(2).setIcon(R.drawable.archive);
         getActivity().setTitle(R.string.sausage_notes);
         Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
 

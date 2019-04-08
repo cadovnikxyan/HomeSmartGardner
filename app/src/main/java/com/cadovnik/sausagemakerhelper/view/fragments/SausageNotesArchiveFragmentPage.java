@@ -17,6 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class SausageNotesArchiveFragmentPage extends Fragment {
 
+    public SausageNotesArchiveFragmentPage(){
+        Log.d(this.getClass().getSimpleName(), "Constructor: ");
+    }
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);

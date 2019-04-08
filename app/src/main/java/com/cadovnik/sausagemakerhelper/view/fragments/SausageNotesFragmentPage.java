@@ -28,6 +28,9 @@ import ru.rambler.libs.swipe_layout.SwipeLayout;
 public class SausageNotesFragmentPage extends Fragment {
     private SausageNotes notes;
 
+    public SausageNotesFragmentPage(){
+        Log.d(this.getClass().getSimpleName(), "Constructor: ");
+    }
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);

@@ -13,6 +13,10 @@ import androidx.fragment.app.Fragment;
 
 public class SausageCalendarFragment extends Fragment {
 
+    public  SausageCalendarFragment(){
+        Log.d(this.getClass().getSimpleName(), "Constructor: ");
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
