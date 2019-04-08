@@ -196,7 +196,8 @@ public class SausageMakerFragment extends Fragment {
             TextInputEditText name = holder.view.findViewById(R.id.sausage_spice).findViewById(R.id.sausage_spice_name);
             name.setText(spice.first);
             TextInputEditText weight = holder.view.findViewById(R.id.sausage_spice).findViewById(R.id.sausage_spice_weight);
-            weight.setText(String.format("%.2f", Double.valueOf(spice.second)));
+            String weightValue = String.format("%.2f", Double.valueOf(spice.second.isEmpty() ? "0" : spice.second));
+            weight.setText(weightValue);
         }
 
         @Override
