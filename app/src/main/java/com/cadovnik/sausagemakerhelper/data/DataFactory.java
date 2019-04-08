@@ -34,7 +34,12 @@ public final class DataFactory {
                     try{
                         ContentValues values = new ContentValues();
                         indexesSalting.forEach((s, integer) -> values.put(s, cursorSalting.getString(integer)));
-                        indexesSausage.forEach((s, integer) -> values.put(s, cursorSausageNotes.getString(integer)));
+                        indexesSausage.forEach((s, integer) -> {
+                            if (s.equals(DataContract.SausageNoteDB.COLUMN_SAUSAGE_IMAGE))
+                                values.put(s, cursorSausageNotes.getBlob(integer));
+                            else
+                                values.put(s, cursorSausageNotes.getString(integer));
+                        });
                         notes.add(new SausageNote(values));
                     }
                     catch (SQLException e){

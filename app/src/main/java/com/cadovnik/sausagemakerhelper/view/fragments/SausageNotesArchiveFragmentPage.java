@@ -17,17 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class SausageNotesArchiveFragmentPage extends Fragment {
 
-    private static SausageNotesArchiveFragmentPage instance = null;
-    public static SausageNotesArchiveFragmentPage newInstance() {
-        if (instance == null )
-            instance = new SausageNotesArchiveFragmentPage();
-        return instance;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+//        setRetainInstance(true);
         Log.d(this.getClass().getSimpleName(), "onCreate: ");
     }
 
@@ -47,6 +40,7 @@ public class SausageNotesArchiveFragmentPage extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
+        Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
     }
     @Override
     public void onDestroy() {

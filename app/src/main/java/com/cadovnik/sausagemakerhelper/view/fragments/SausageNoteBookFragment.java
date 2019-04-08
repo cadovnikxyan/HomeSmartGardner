@@ -20,13 +20,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 public class SausageNoteBookFragment extends Fragment {
-    private static SausageNoteBookFragment instance = null;
-    public static SausageNoteBookFragment newInstance(){
-        if ( instance == null )
-            instance = new SausageNoteBookFragment();
 
-        return instance;
-    }
     protected static String tabTitles[];
     private SausageNoteBookFragmentPagerAdapter adapter;
 
@@ -43,32 +37,35 @@ public class SausageNoteBookFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.sausage_notebook, container, false);
-        TabLayout tabs = view.findViewById(R.id.sausage_notes_tabs);
-        ViewPager pager = view.findViewById(R.id.sausage_notes_pager);
-        pager.setOffscreenPageLimit(3);
-        pager.setAdapter(adapter);
-        tabs.setupWithViewPager(pager);
+
         FloatingActionsMenu menu = view.findViewById(R.id.multiple_actions);
         FloatingActionButton create_sausage = view.findViewById(R.id.create_sausage);
         create_sausage.setOnClickListener(v -> {
             menu.collapse();
             ((MainActivity)getActivity()).displaySelectedScreen(R.id.sausage_maker);
         });
-        tabs.getTabAt(0).setIcon(R.drawable.salamis);
-        tabs.getTabAt(1).setIcon(R.drawable.calendar);
-        tabs.getTabAt(2).setIcon(R.drawable.archive);
+
         Log.d(this.getClass().getSimpleName(), "onCreateView: ");
         return view;
     }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        TabLayout tabs = view.findViewById(R.id.sausage_notes_tabs);
+        ViewPager pager = view.findViewById(R.id.sausage_notes_pager);
+        tabs.setupWithViewPager(pager);
+        pager.setAdapter(adapter);
+        tabs.getTabAt(0).setIcon(R.drawable.salamis);
+        tabs.getTabAt(1).setIcon(R.drawable.calendar);
+        tabs.getTabAt(2).setIcon(R.drawable.archive);
         getActivity().setTitle(R.string.sausage_notes);
+        Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
 
     }
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         Log.d(this.getClass().getSimpleName(), "onDestroy: ");
     }
 
@@ -89,14 +86,15 @@ public class SausageNoteBookFragment extends Fragment {
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    return SausageNotesFragmentPage.newInstance();
+                    return new SausageNotesFragmentPage();
                 case 1:
-                    return SausageCalendarFragment.newInstance();
+                    return new SausageCalendarFragment();
                 case 2:
-                    return SausageNotesArchiveFragmentPage.newInstance();
+                    return new SausageNotesArchiveFragmentPage();
             }
             return null;
         }
+
         @Override
         public CharSequence getPageTitle(int position) {
             return SausageNoteBookFragment.tabTitles[position];

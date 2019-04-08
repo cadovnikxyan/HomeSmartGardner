@@ -13,13 +13,15 @@ import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends FragmentActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
@@ -28,8 +30,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar ,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -81,11 +81,11 @@ public class MainActivity extends AppCompatActivity
         if (itemId == R.id.nav_refrigerator) {
             fragment = RefigeratorFragment.newInstance();
         } else if (itemId == R.id.sausage_maker) {
-            fragment = SausageMakerFragment.newInstance();
+            fragment = new SausageMakerFragment();
         } else if ( itemId == R.id.nav_heat_treatment) {
             fragment = HeatTreatmentFragment.newInstance();
         } else if ( itemId == R.id.sausage_notebooks){
-            fragment = SausageNoteBookFragment.newInstance();
+            fragment = new SausageNoteBookFragment();
         }
 
         //replacing the fragment
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity
             ft.commit();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
     @SuppressWarnings("StatementWithEmptyBody")

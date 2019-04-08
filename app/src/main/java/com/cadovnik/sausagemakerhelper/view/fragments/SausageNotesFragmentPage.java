@@ -1,13 +1,18 @@
 package com.cadovnik.sausagemakerhelper.view.fragments;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cadovnik.sausagemakerhelper.R;
+import com.cadovnik.sausagemakerhelper.data.DataController;
 import com.cadovnik.sausagemakerhelper.data.HeatingProcess;
 import com.cadovnik.sausagemakerhelper.data.SaltingUnit;
 import com.cadovnik.sausagemakerhelper.data.SausageNotes;
@@ -18,20 +23,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import ru.rambler.libs.swipe_layout.SwipeLayout;
 
 public class SausageNotesFragmentPage extends Fragment {
-    private static SausageNotesFragmentPage instance = null;
-    public static SausageNotesFragmentPage newInstance() {
-        if (instance == null )
-            instance = new SausageNotesFragmentPage();
-        return instance;
-    }
     private SausageNotes notes;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        notes = new SausageNotes(getContext());
         Log.d(this.getClass().getSimpleName(), "onCreate: ");
     }
 
@@ -51,6 +51,7 @@ public class SausageNotesFragmentPage extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
     }
 
     @Override
@@ -76,18 +77,53 @@ public class SausageNotesFragmentPage extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull SausageNotesFragmentPage.SausageNotesAdapter.ViewHolder holder, int position) {
+            SwipeLayout swipeLayout = (SwipeLayout) holder.view;
+            swipeLayout.setOnSwipeListener(new SwipeLayout.OnSwipeListener() {
+                @Override
+                public void onBeginSwipe(SwipeLayout swipeLayout, boolean moveToRight) {
+
+                }
+
+                @Override
+                public void onSwipeClampReached(SwipeLayout swipeLayout, boolean moveToRight) {
+                    if ( !moveToRight ){
+                        Toast.makeText(swipeLayout.getContext(),
+                                "Sausage deleted!",
+                                Toast.LENGTH_SHORT)
+                                .show();
+                        DataController controller = new DataController(holder.view.getContext());
+                        notes.At(position).removeRow(controller.getWritableDatabase());
+                        notes.RemoveAt(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, notes.getCount());
+                        controller.close();
+                    }
+                }
+
+                @Override
+                public void onLeftStickyEdge(SwipeLayout swipeLayout, boolean moveToRight) {
+
+                }
+
+                @Override
+                public void onRightStickyEdge(SwipeLayout swipeLayout, boolean moveToRight) {
+
+                }
+            });
             TextView title = holder.cardView.findViewById(R.id.sausage_title);
             title.setText(notes.At(position).getName());
             TextView description = holder.cardView.findViewById(R.id.sausage_description);
-            description.setText(notes.At(position).getDescription());
+            String desStr = notes.At(position).getDescription();
+            if ( desStr !=null && !desStr.isEmpty() )
+                description.setText(desStr);
             holder.setSaltingInfo(notes.At(position).getSalting());
             holder.setHeatingInfo(notes.At(position).getHeating());
-//            ImageView image = holder.cardView.findViewById(R.id.sausage_image);
-//            Bitmap bitmap = notes.At(position).getBitmap();
-//            holder.cardView.getViewTreeObserver().addOnGlobalLayoutListener(
-//                    () -> {
-//                        image.setImageBitmap(Bitmap.createScaledBitmap(bitmap, holder.cardView.getWidth(), image.getHeight(),false));
-//                    });
+            Bitmap bitmap = notes.At(position).getBitmap();
+            holder.cardView.getViewTreeObserver().addOnGlobalLayoutListener(
+                    () -> {
+                        ImageView image = holder.cardView.findViewById(R.id.sausage_image);
+                        image.setImageBitmap(Bitmap.createScaledBitmap(bitmap, holder.cardView.getWidth(), image.getHeight(),false));
+                    });
         }
 
         @Override
@@ -97,10 +133,12 @@ public class SausageNotesFragmentPage extends Fragment {
 
         public static class ViewHolder extends RecyclerView.ViewHolder {
             public MaterialCardView cardView;
+            public View view;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 cardView = itemView.findViewById(R.id.sausage_card);
+                view = itemView;
 
             }
 

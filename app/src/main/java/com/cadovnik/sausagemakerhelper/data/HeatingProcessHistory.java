@@ -30,6 +30,11 @@ public class HeatingProcessHistory implements IDBHelper {
         return 0;
     }
 
+    @Override
+    public void removeRow(SQLiteDatabase db) {
+
+    }
+
     public List<HeatingProcess> restoreUnits(){
         List<HeatingProcess> list = new ArrayList<>();
         String[] columns = new String[2];

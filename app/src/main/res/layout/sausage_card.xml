@@ -1,51 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/sausage_card"
-        android:clickable="true"
-        card_view:cardCornerRadius="5dp"
-        card_view:cardUseCompatPadding="true"
+    <ru.rambler.libs.swipe_layout.SwipeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:swipe_app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:minHeight="200dp"
-        android:padding="5dp">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        app:left_swipe_enabled="true"
+        app:right_swipe_enabled="true">
 
-    <ImageView
-        android:id="@+id/sausage_image"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        app:srcCompat="@android:drawable/alert_light_frame" />
-    <TextView
-        android:id="@+id/sausage_title"
+    <RelativeLayout
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sausage_notes"
-        android:textAllCaps="false"
-        android:textStyle="bold"
-        android:textSize="35sp" />
+        android:layout_height="wrap_content">
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/sausage_card"
+            android:clickable="true"
+            card_view:cardCornerRadius="5dp"
+            card_view:cardUseCompatPadding="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="200dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/sausage_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sausage_card_description"
-        android:textSize="20sp" />
-</LinearLayout>
+                <ImageView
+                    android:id="@+id/sausage_image"
+                    android:layout_width="fill_parent"
+                    android:layout_height="200dp"
+                    app:srcCompat="@raw/sausage_pic" />
+                <TextView
+                    android:id="@+id/sausage_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sausage_notes"
+                    android:textAllCaps="false"
+                    android:textStyle="bold"
+                    android:textSize="35sp" />
 
-    </com.google.android.material.card.MaterialCardView>
-</RelativeLayout>
+                <TextView
+                    android:id="@+id/sausage_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sausage_card_description"
+                    android:textSize="20sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </RelativeLayout>
+        <!--RIGHT-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            swipe_app:gravity="right"
+            swipe_app:bring_to_clamp="150dp"
+            swipe_app:clamp="self"
+            swipe_app:sticky="100dp"
+            android:background="@drawable/btn_rounded"
+            app:srcCompat= "@android:drawable/ic_menu_delete">
+        </LinearLayout>
+
+        <!--LEFT-->
+        <FrameLayout
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            swipe_app:gravity="left"
+            swipe_app:bring_to_clamp="100dp"
+            swipe_app:clamp="self"
+            swipe_app:sticky="none">
+        </FrameLayout>
+    </ru.rambler.libs.swipe_layout.SwipeLayout>
+
+
 

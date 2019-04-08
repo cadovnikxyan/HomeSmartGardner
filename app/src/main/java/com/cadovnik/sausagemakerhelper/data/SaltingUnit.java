@@ -2,6 +2,7 @@ package com.cadovnik.sausagemakerhelper.data;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,32 +50,23 @@ public class SaltingUnit implements IDBHelper  {
         date = new Date(values.get(DataContract.SaltingUnitDB.COLUMN_DATE).toString());
     }
 
-    public List<String> calculate(){
-        List<String> results = new ArrayList<>();
-
+    public void calculate(){
         rock_salt = weight_of_meat * ( salting_percent / 100 );
 
         if ( wet_salting ){
             brine = weight_of_meat * brine_percent;
             rock_salt = (weight_of_meat + brine) * (salting_percent / 100);
-            results.add(String.format("Brine weight: %.2f", brine));
         }
         if ( nitrite_salting_percent != 0 ) {
             nitrite_salt = rock_salt * (nitrite_salting_percent / 100);
             rock_salt = rock_salt - nitrite_salt;
-            results.add(String.format("Nitrite salt weight: %.2f", nitrite_salt));
         }
         if ( with_phosphates ) {
             phosphates = weight_of_meat * phosphates_percent;
-            results.add(String.format("Phosphates weight: %.2f", phosphates));
         }
         if ( with_sodium_ascorbate ) {
             sodium_ascorbate = weight_of_meat * sodium_ascorbate_percent;
-            results.add(String.format("Sodium ascorbate weight: %.2f", sodium_ascorbate));
         }
-
-        results.add(String.format("Rock salt weight: %.2f", rock_salt));
-        return results;
     }
 
     @Override
@@ -207,6 +199,11 @@ public class SaltingUnit implements IDBHelper  {
             createId();
 
         return id;
+    }
+
+    @Override
+    public void removeRow(SQLiteDatabase db) {
+
     }
 
     public void createId(){

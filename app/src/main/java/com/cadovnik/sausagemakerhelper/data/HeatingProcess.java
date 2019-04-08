@@ -68,6 +68,11 @@ public class HeatingProcess implements IDBHelper {
         return 0;
     }
 
+    @Override
+    public void removeRow(SQLiteDatabase db) {
+
+    }
+
     public void setStatus(HeatingStatus status) {
         this.status = status;
     }

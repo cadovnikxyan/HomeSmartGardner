@@ -18,4 +18,9 @@ public class SaltingHistory implements IDBHelper {
     public int getId() {
         return 0;
     }
+
+    @Override
+    public void removeRow(SQLiteDatabase db) {
+
+    }
 }

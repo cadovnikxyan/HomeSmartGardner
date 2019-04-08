@@ -33,6 +33,15 @@ public class SausageNotes implements IDBHelper {
         return 0;
     }
 
+    @Override
+    public void removeRow(SQLiteDatabase db) {
+
+    }
+
+    public void RemoveAt(int i){
+        notes.remove(i);
+    }
+
     public int getCount(){
         return notes.size();
     }

@@ -102,6 +102,11 @@ public class HeatingProcessUnit implements IDBHelper {
         return 0;
     }
 
+    @Override
+    public void removeRow(SQLiteDatabase db) {
+
+    }
+
     public void setHeating_process_id(long heating_process_id) {
         this.heating_process_id = heating_process_id;
     }
