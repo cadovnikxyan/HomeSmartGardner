@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 public class SausageNotes implements IDBHelper {
     private List<SausageNote> notes = new ArrayList<>();
     private DataController controller;
+    private SausageNotes(){}
     public SausageNotes(@Nullable Context context){
         controller = new DataController(context);
         notes = DataFactory.RestoreSausageNotes(controller.getWritableDatabase());

@@ -1,6 +1,7 @@
 package com.cadovnik.sausagemakerhelper.view.fragments;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -9,7 +10,9 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.cadovnik.sausagemakerhelper.R;
@@ -21,10 +24,8 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,7 +38,7 @@ public class SausageMakerFragment extends Fragment {
     private SaltingUnit saltingUnit;
     private SausageMakerFragmentAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-
+    private String[] sausageOptionsNames;
     public static class InputFilterMinMax implements InputFilter {
 
         private double min, max;
@@ -65,7 +66,12 @@ public class SausageMakerFragment extends Fragment {
         private boolean isInRange(double a, double b, double c) {
             return b > a ? c >= a && c <= b : c >= b && c <= a;
         }
+    }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        sausageOptionsNames = new String[]{getString(R.string.sausage_options),getString(R.string.dry_wet_salting), getString(R.string.phosphates), getString(R.string.sodium_ascorbate)};
     }
 
     @Override
@@ -81,31 +87,46 @@ public class SausageMakerFragment extends Fragment {
         nitrite_salting.setFilters(new InputFilter[]{new InputFilterMinMax("0", "100")});
         RecyclerView result = view.findViewById(R.id.sausage_result);
         result.setHasFixedSize(true);
-        adapter = new SausageMakerFragment.SausageMakerFragmentAdapter(new ArrayList<>());
+        adapter = new SausageMakerFragment.SausageMakerFragmentAdapter(new ArrayList<>(), new ArrayList<>());
         layoutManager = new LinearLayoutManager(getActivity());
         result.setLayoutManager(layoutManager);
-
         result.setAdapter(adapter);
         result.setLayoutManager( new LinearLayoutManager(getActivity()));
         saltingUnit = new SaltingUnit();
 
+        Spinner spinner = view.findViewById(R.id.sausage_options);
+
+        ArrayList<SausageOption> listOptions = new ArrayList<>();
+
+        for (int i = 0; i < sausageOptionsNames.length; i++) {
+            SausageOption option = new SausageOption();
+            option.setTitle(sausageOptionsNames[i]);
+            option.setSelected(false);
+            listOptions.add(option);
+        }
+
+        SausageOptionAdapter sausageOptionAdapter = new SausageOptionAdapter(getContext(), 0, listOptions);
+        spinner.setAdapter(sausageOptionAdapter);
+
         view.findViewById(R.id.add_spice).setOnClickListener(v -> {
             adapter.addSpice(new Pair<>("",""));
+            menu.collapse();
         });
 
         calculate.setOnClickListener(v -> {
             saltingUnit = new SaltingUnit();
-            saltingUnit.setWet_salting(getValue(view, R.id.dry_wet));
+            saltingUnit.setWet_salting(listOptions.get(1).isSelected());
             saltingUnit.setNitrite_salting_percent(getValue(view, R.id.nitrite_salt_percent_value, Double.valueOf(R.string.nitrite_salt_default)));
             saltingUnit.setSalting_percent(getValue(view, R.id.salting_percent_value, Double.valueOf(R.string.salting_percent_default)));
             saltingUnit.setWeight_of_meat(getValue(view, R.id.meat_weight_value, 0));
-            saltingUnit.setWith_phosphates(getValue(view, R.id.phosphates));
-            saltingUnit.setWith_sodium_ascorbate(getValue(view, R.id.sodium_ascorbate));
+            saltingUnit.setWith_phosphates(listOptions.get(2).isSelected());
+            saltingUnit.setWith_sodium_ascorbate(listOptions.get(3).isSelected());
             saltingUnit.calculate();
             adapter.addItems(fillResults(saltingUnit));
             menu.collapse();
 
         });
+
         FloatingActionButton save = view.findViewById(R.id.salting_save);
         save.setOnClickListener( v -> {
             TextInputEditText sausage_name = view.findViewById(R.id.sausage_name);
@@ -119,6 +140,7 @@ public class SausageMakerFragment extends Fragment {
             controller.close();
             menu.collapse();
         });
+
         return view;
     }
 
@@ -132,7 +154,6 @@ public class SausageMakerFragment extends Fragment {
         List<Pair<String, String>> results = new ArrayList<>();
 
         if ( unit.isWet_salting() ){
-
             results.add(new Pair<>(getString(R.string.sausage_brine), String.valueOf(unit.getBrine())));
         }
         if ( unit.getNitrite_salting_percent() != 0 ) {
@@ -160,15 +181,14 @@ public class SausageMakerFragment extends Fragment {
         }
         return result;
     }
-    private boolean getValue(View view, int id){
-        return ((CheckBox)view.findViewById(id)).isChecked();
-    }
 
     public static class SausageMakerFragmentAdapter extends RecyclerView.Adapter<SausageMakerFragment.SausageMakerFragmentAdapter.ViewHolder>{
         private List<Pair<String, String>> spices;
+        private List<Pair<String, String>> saltings;
 
-        public SausageMakerFragmentAdapter(List<Pair<String, String>> spices){
+        public SausageMakerFragmentAdapter(List<Pair<String, String>> spices, List<Pair<String, String>> saltings){
             this.spices = spices;
+            this.saltings = saltings;
         }
 
         public void addSpice(Pair<String, String> spice){
@@ -176,12 +196,12 @@ public class SausageMakerFragment extends Fragment {
             notifyDataSetChanged();
 
         }
-        public void addItems(List<Pair<String, String>>  items){
-            Set<Pair<String, String>> set = new HashSet<>(items);
-            spices.addAll(set);
-            notifyDataSetChanged();
 
+        public void addItems(List<Pair<String, String>>  items){
+            saltings = items;
+            notifyDataSetChanged();
         }
+
         @NonNull
         @Override
         public SausageMakerFragmentAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -192,17 +212,31 @@ public class SausageMakerFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull SausageMakerFragmentAdapter.ViewHolder holder, int position) {
-            Pair<String, String> spice = spices.get(position);
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.addAll(spices);
+            list.addAll(saltings);
+            Pair<String, String> item = list.get(position);
+
+            boolean isReadOnly = true;
+            if ( saltings.contains(item) ){
+                isReadOnly = false;
+            }
+            bindView(holder, item, isReadOnly);
+        }
+
+        private void bindView(@NonNull SausageMakerFragmentAdapter.ViewHolder holder,  Pair<String, String> item, boolean isReadOnly){
             TextInputEditText name = holder.view.findViewById(R.id.sausage_spice).findViewById(R.id.sausage_spice_name);
-            name.setText(spice.first);
+            name.setText(item.first);
+            name.setEnabled(isReadOnly);
             TextInputEditText weight = holder.view.findViewById(R.id.sausage_spice).findViewById(R.id.sausage_spice_weight);
-            String weightValue = String.format("%.2f", Double.valueOf(spice.second.isEmpty() ? "0" : spice.second));
+            String weightValue = String.format(Locale.ENGLISH,"%.2f", Double.valueOf(item.second.isEmpty() ? "0" : item.second));
             weight.setText(weightValue);
+            weight.setEnabled(isReadOnly);
         }
 
         @Override
         public int getItemCount() {
-            return spices.size();
+            return spices.size() + saltings.size();
         }
 
         public static class ViewHolder extends RecyclerView.ViewHolder{
@@ -211,6 +245,86 @@ public class SausageMakerFragment extends Fragment {
                 super(itemView);
                 view = itemView;
             }
+        }
+    }
+
+    public static class SausageOption {
+        private String title;
+        private boolean selected;
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public boolean isSelected() {
+            return selected;
+        }
+
+        public void setSelected(boolean selected) {
+            this.selected = selected;
+        }
+    }
+
+    public static class SausageOptionAdapter extends ArrayAdapter<SausageOption> {
+        private ArrayList<SausageOption> listState;
+        private boolean isFromView = false;
+
+        public SausageOptionAdapter(Context context, int resource, List<SausageOption> objects) {
+            super(context, resource, objects);
+            this.listState = (ArrayList<SausageOption>) objects;
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+                return getCustomView(position, convertView, parent);
+
+        }
+
+        public View getCustomView(final int position, View convertView, ViewGroup parent) {
+            final ViewHolder holder;
+            if (convertView == null) {
+                LayoutInflater layoutInflator = LayoutInflater.from(parent.getContext());
+                convertView = layoutInflator.inflate(R.layout.sausage_option_item, null);
+                holder = new ViewHolder();
+                holder.text = convertView.findViewById(R.id.option_name);
+                holder.checkBox = convertView.findViewById(R.id.option_checkbox);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            holder.text.setText(listState.get(position).getTitle());
+            holder.text.setOnClickListener(v -> holder.checkBox.setChecked( !holder.checkBox.isChecked()));
+            isFromView = true;
+            holder.checkBox.setChecked(listState.get(position).isSelected());
+            isFromView = false;
+
+            if ( position == 0)
+                holder.checkBox.setVisibility(View.INVISIBLE);
+            else
+                holder.checkBox.setVisibility(View.VISIBLE);
+
+            holder.checkBox.setTag(position);
+            holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (!isFromView) {
+                    listState.get(position).setSelected(isChecked);
+                }
+            });
+            return convertView;
+        }
+
+        private class ViewHolder {
+            private TextView text;
+            private CheckBox checkBox;
         }
     }
 }

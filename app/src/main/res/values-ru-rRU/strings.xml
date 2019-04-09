@@ -34,7 +34,7 @@
     <string name="sausage_calendar">Календарь</string>
     <string name="sausage_archive">Архив</string>
     <string name="create_sausage">Создать колбасу</string>
-    <string name="sausage_card_description">Рецепт</string>
+    <string name="sausage_card_description">Описание</string>
     <string name="sausage_name">Название колбасы:</string>
     <string name="sausage_spice_name">Название:</string>
     <string name="sausage_spice_weight">Вес (г):</string>
@@ -45,4 +45,5 @@
     <string name="sausage_phosphates">Фосфаты</string>
     <string name="sausage_sodium_ascorbate">Аскорбинат натрия</string>
     <string name="sausage_rock_salt">Каменная соль</string>
+    <string name="sausage_options">Добавки</string>
 </resources>

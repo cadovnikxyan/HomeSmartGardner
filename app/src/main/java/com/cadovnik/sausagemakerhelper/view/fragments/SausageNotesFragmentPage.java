@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,12 +16,15 @@ import com.cadovnik.sausagemakerhelper.data.HeatingProcess;
 import com.cadovnik.sausagemakerhelper.data.SaltingUnit;
 import com.cadovnik.sausagemakerhelper.data.SausageNotes;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.AutoTransition;
+import androidx.transition.TransitionManager;
 import ru.rambler.libs.swipe_layout.SwipeLayout;
 
 public class SausageNotesFragmentPage extends Fragment {
@@ -137,12 +139,26 @@ public class SausageNotesFragmentPage extends Fragment {
         public static class ViewHolder extends RecyclerView.ViewHolder {
             public MaterialCardView cardView;
             public View view;
+            private View extraLayout;
+            private TextInputEditText textInputEditText;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 cardView = itemView.findViewById(R.id.sausage_card);
-                view = itemView;
+                extraLayout = cardView.findViewById(R.id.info_card);
+                textInputEditText = cardView.findViewById(R.id.card_extra);
+                cardView.setOnClickListener(v -> {
 
+                        if (extraLayout.getVisibility() == View.GONE) {
+                            extraLayout.setVisibility(View.VISIBLE);
+                            textInputEditText.setText("TEXT");
+                        } else {
+                            extraLayout.setVisibility(View.GONE);
+                        }
+                    TransitionManager.beginDelayedTransition((ViewGroup) view, new AutoTransition());
+
+                });
+                view = itemView;
             }
 
             public void setSaltingInfo(SaltingUnit salting){

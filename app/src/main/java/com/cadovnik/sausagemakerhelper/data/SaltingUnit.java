@@ -2,11 +2,8 @@ package com.cadovnik.sausagemakerhelper.data;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Pair;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class SaltingUnit implements IDBHelper  {
 
@@ -37,11 +34,12 @@ public class SaltingUnit implements IDBHelper  {
     public SaltingUnit(ContentValues values){
         id = Integer.valueOf(values.get(DataContract.SaltingUnitDB._ID).toString());
         brine = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_BRINE_WEIGHT).toString());
-        if ( brine != 0 )
-            wet_salting = true;
+        wet_salting = brine > 0;
         weight_of_meat = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_MEAT_WEIGHT).toString());
         rock_salt = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_ROCK_SALT_WEIGHT).toString());
         nitrite_salt = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_NITRITE_SALT_WEIGHT).toString());
+        nitrite_salting_percent = nitrite_salt / (weight_of_meat / 100);
+        salting_percent = (rock_salt + nitrite_salt ) / (weight_of_meat / 100);
         phosphates = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_PHOSPHATES_WEIGHT).toString());
         with_phosphates = phosphates > 0;
         sodium_ascorbate = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_SODIUM_ASCORBATE_WEIGHT).toString());
@@ -72,7 +70,6 @@ public class SaltingUnit implements IDBHelper  {
     @Override
     public ContentValues convert() {
         ContentValues values = new ContentValues();
-//        values.put(DataContract.SaltingUnitDB._ID, getId());
         values.put(DataContract.SaltingUnitDB.COLUMN_BRINE_WEIGHT, brine);
         values.put(DataContract.SaltingUnitDB.COLUMN_MEAT_WEIGHT, weight_of_meat);
         values.put(DataContract.SaltingUnitDB.COLUMN_ROCK_SALT_WEIGHT, rock_salt);
@@ -130,16 +127,8 @@ public class SaltingUnit implements IDBHelper  {
         return nitrite_salt;
     }
 
-    public void setPhosphates(double phosphates) {
-        this.phosphates = phosphates;
-    }
-
     public double getPhosphates() {
         return phosphates;
-    }
-
-    public void setSodium_ascorbate(double sodium_ascorbate) {
-        this.sodium_ascorbate = sodium_ascorbate;
     }
 
     public double getSodium_ascorbate() {

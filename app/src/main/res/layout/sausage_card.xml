@@ -13,15 +13,15 @@
         app:right_swipe_enabled="true">
 
     <RelativeLayout
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:orientation="vertical"
+        android:animateLayoutChanges="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/sausage_card"
             android:clickable="true"
-            card_view:cardCornerRadius="5dp"
-            card_view:cardUseCompatPadding="true"
+            swipe_app:cardCornerRadius="5dp"
+            swipe_app:cardUseCompatPadding="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="200dp">
@@ -50,6 +50,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/sausage_card_description"
                     android:textSize="20sp" />
+                <include layout="@layout/extra_sausage_card" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -62,8 +63,15 @@
             swipe_app:bring_to_clamp="150dp"
             swipe_app:clamp="self"
             swipe_app:sticky="100dp"
-            android:background="@drawable/btn_rounded"
-            app:srcCompat= "@android:drawable/ic_menu_delete">
+            android:background="@color/colorRightSwipe">
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                swipe_app:srcCompat="@android:drawable/ic_menu_delete" />
         </LinearLayout>
 
         <!--LEFT-->
@@ -73,7 +81,16 @@
             swipe_app:gravity="left"
             swipe_app:bring_to_clamp="100dp"
             swipe_app:clamp="self"
+            android:background="@color/colorLeftSwipe"
+            app:srcCompat="@drawable/archive"
             swipe_app:sticky="none">
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                swipe_app:srcCompat="@drawable/archive" />
         </FrameLayout>
     </ru.rambler.libs.swipe_layout.SwipeLayout>
 

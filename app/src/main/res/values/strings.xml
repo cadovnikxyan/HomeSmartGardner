@@ -44,7 +44,7 @@
     <string name="sausage_calendar">Calendar</string>
     <string name="sausage_archive">Archive</string>
     <string name="create_sausage">Make sausage</string>
-    <string name="sausage_card_description">Recipe</string>
+    <string name="sausage_card_description">Description</string>
     <string name="sausage_name">Sausage Name:</string>
     <string name="sausage_spice_name">Spice Name:</string>
     <string name="sausage_spice_weight">Spice weight  (g):</string>
@@ -55,4 +55,5 @@
     <string name="sausage_phosphates">Phosphates</string>
     <string name="sausage_sodium_ascorbate">Sodium ascorbate</string>
     <string name="sausage_rock_salt">Rock salt</string>
+    <string name="sausage_options">Sausage options</string>
 </resources>

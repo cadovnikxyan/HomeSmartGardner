@@ -30,7 +30,8 @@
         <item name="boxStrokeColor">@color/colorPrimary</item>
     </style>
 
-    <style name="TextInputEditText" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox.Dense">
+    <style name="TextInputEditText" parent="ThemeOverlay.MaterialComponents.TextInputEditText.FilledBox">
+
         <item name="android:textColor">@android:color/black</item>
     </style>
 
