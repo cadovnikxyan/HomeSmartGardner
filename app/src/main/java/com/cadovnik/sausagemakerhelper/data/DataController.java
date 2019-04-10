@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 public class DataController extends SQLiteOpenHelper {
     public static final String LOG_TAG = DataController.class.getSimpleName();
     private static final String DATABASE_NAME = "sausagemakerhelper.db";
-    private static final int DATABASE_VERSION = 12;
+    private static final int DATABASE_VERSION = 13;
 
     public DataController(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

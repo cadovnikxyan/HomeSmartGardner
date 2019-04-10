@@ -50,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/sausage_card_description"
                     android:textSize="20sp" />
-                <include layout="@layout/extra_sausage_card" />
+                <include layout="@layout/sausage_extra_card" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

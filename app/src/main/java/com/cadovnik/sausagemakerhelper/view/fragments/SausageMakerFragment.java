@@ -87,7 +87,7 @@ public class SausageMakerFragment extends Fragment {
         nitrite_salting.setFilters(new InputFilter[]{new InputFilterMinMax("0", "100")});
         RecyclerView result = view.findViewById(R.id.sausage_result);
         result.setHasFixedSize(true);
-        adapter = new SausageMakerFragment.SausageMakerFragmentAdapter(new ArrayList<>(), new ArrayList<>());
+        adapter = new SausageMakerFragment.SausageMakerFragmentAdapter(new ArrayList<>(), new ArrayList<>(), getContext());
         layoutManager = new LinearLayoutManager(getActivity());
         result.setLayoutManager(layoutManager);
         result.setAdapter(adapter);
@@ -143,6 +143,19 @@ public class SausageMakerFragment extends Fragment {
 
         return view;
     }
+    private static int getIconID(String item, Context context){
+        if (item.equals(context.getString(R.string.sausage_nitrite_salt))){
+            return R.drawable.nitrite_salt;
+        }else if (item.equals(context.getString(R.string.sausage_rock_salt))){
+            return R.drawable.rock_salt;
+        }else if (item.equals(context.getString(R.string.sausage_brine))) {
+            return R.drawable.brine;
+        }else if (item.equals(context.getString(R.string.sausage_phosphates)) || item.equals(context.getString(R.string.sausage_sodium_ascorbate)) ) {
+            return R.drawable.additives;
+        }else{
+            return R.drawable.spices;
+        }
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -185,10 +198,12 @@ public class SausageMakerFragment extends Fragment {
     public static class SausageMakerFragmentAdapter extends RecyclerView.Adapter<SausageMakerFragment.SausageMakerFragmentAdapter.ViewHolder>{
         private List<Pair<String, String>> spices;
         private List<Pair<String, String>> saltings;
+        private  Context context;
 
-        public SausageMakerFragmentAdapter(List<Pair<String, String>> spices, List<Pair<String, String>> saltings){
+        public SausageMakerFragmentAdapter(List<Pair<String, String>> spices, List<Pair<String, String>> saltings, Context context){
             this.spices = spices;
             this.saltings = saltings;
+            this.context = context;
         }
 
         public void addSpice(Pair<String, String> spice){
@@ -228,6 +243,7 @@ public class SausageMakerFragment extends Fragment {
             TextInputEditText name = holder.view.findViewById(R.id.sausage_spice).findViewById(R.id.sausage_spice_name);
             name.setText(item.first);
             name.setEnabled(isReadOnly);
+            name.setCompoundDrawablesWithIntrinsicBounds(context.getResources().getDrawable(SausageMakerFragment.getIconID(item.first, context)),null, null,null);
             TextInputEditText weight = holder.view.findViewById(R.id.sausage_spice).findViewById(R.id.sausage_spice_weight);
             String weightValue = String.format(Locale.ENGLISH,"%.2f", Double.valueOf(item.second.isEmpty() ? "0" : item.second));
             weight.setText(weightValue);

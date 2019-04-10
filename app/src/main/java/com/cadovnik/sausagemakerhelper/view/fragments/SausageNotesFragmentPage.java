@@ -18,6 +18,8 @@ import com.cadovnik.sausagemakerhelper.data.SausageNotes;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.Locale;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -140,33 +142,59 @@ public class SausageNotesFragmentPage extends Fragment {
             public MaterialCardView cardView;
             public View view;
             private View extraLayout;
-            private TextInputEditText textInputEditText;
+            SaltingUnit saltingUnit;
+            HeatingProcess heatingProcess;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 cardView = itemView.findViewById(R.id.sausage_card);
                 extraLayout = cardView.findViewById(R.id.info_card);
-                textInputEditText = cardView.findViewById(R.id.card_extra);
                 cardView.setOnClickListener(v -> {
 
                         if (extraLayout.getVisibility() == View.GONE) {
                             extraLayout.setVisibility(View.VISIBLE);
-                            textInputEditText.setText("TEXT");
+                            ((TextInputEditText)cardView.findViewById(R.id.card_extra_nitrite_salt)).setText(String.format(Locale.ENGLISH,"%.2f",saltingUnit.getNitrite_salt()));
+                            ((TextInputEditText)cardView.findViewById(R.id.card_extra_rock_salt)).setText(String.format(Locale.ENGLISH,"%.2f",saltingUnit.getRock_salt()));
+                            ((TextInputEditText)cardView.findViewById(R.id.card_extra_weight_meat)).setText(String.format(Locale.ENGLISH,"%.2f",saltingUnit.getWeight_of_meat()));
+                            TextInputEditText brine =  cardView.findViewById(R.id.card_extra_brine);
+                            if ( saltingUnit.isWet_salting() ){
+                                brine.setText(String.format(Locale.ENGLISH,"%.2f",saltingUnit.getBrine()));
+                                brine.setVisibility(View.VISIBLE);
+                            }else{
+                                brine.setVisibility(View.GONE);
+                            }
+
+                            TextInputEditText phosphates =  cardView.findViewById(R.id.card_extra_phosphates);
+                            if ( saltingUnit.isWith_phosphates() ){
+                                phosphates.setText(String.format(Locale.ENGLISH,"%.2f",saltingUnit.getPhosphates()));
+                                phosphates.setVisibility(View.VISIBLE);
+                            }else{
+                                phosphates.setVisibility(View.GONE);
+                            }
+
+                            TextInputEditText sodium_ascorbate =  cardView.findViewById(R.id.card_extra_sodium_ascorbate);
+                            if ( saltingUnit.isWith_sodium_ascorbate() ){
+                                sodium_ascorbate.setText(String.format(Locale.ENGLISH,"%.2f",saltingUnit.getSodium_ascorbate()));
+                                sodium_ascorbate.setVisibility(View.VISIBLE);
+                            }else{
+                                sodium_ascorbate.setVisibility(View.GONE);
+                            }
+
+
                         } else {
                             extraLayout.setVisibility(View.GONE);
                         }
                     TransitionManager.beginDelayedTransition((ViewGroup) view, new AutoTransition());
-
                 });
                 view = itemView;
             }
 
             public void setSaltingInfo(SaltingUnit salting){
-
+                this.saltingUnit = salting;
             }
 
             public void setHeatingInfo(HeatingProcess process){
-
+                this.heatingProcess = process;
             }
         }
     }
