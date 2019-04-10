@@ -150,43 +150,33 @@ public class SausageNotesFragmentPage extends Fragment {
                 cardView = itemView.findViewById(R.id.sausage_card);
                 extraLayout = cardView.findViewById(R.id.info_card);
                 cardView.setOnClickListener(v -> {
-
                         if (extraLayout.getVisibility() == View.GONE) {
                             extraLayout.setVisibility(View.VISIBLE);
-                            ((TextInputEditText)cardView.findViewById(R.id.card_extra_nitrite_salt)).setText(String.format(Locale.ENGLISH,"%.2f",saltingUnit.getNitrite_salt()));
-                            ((TextInputEditText)cardView.findViewById(R.id.card_extra_rock_salt)).setText(String.format(Locale.ENGLISH,"%.2f",saltingUnit.getRock_salt()));
-                            ((TextInputEditText)cardView.findViewById(R.id.card_extra_weight_meat)).setText(String.format(Locale.ENGLISH,"%.2f",saltingUnit.getWeight_of_meat()));
-                            TextInputEditText brine =  cardView.findViewById(R.id.card_extra_brine);
-                            if ( saltingUnit.isWet_salting() ){
-                                brine.setText(String.format(Locale.ENGLISH,"%.2f",saltingUnit.getBrine()));
-                                brine.setVisibility(View.VISIBLE);
-                            }else{
-                                brine.setVisibility(View.GONE);
-                            }
-
-                            TextInputEditText phosphates =  cardView.findViewById(R.id.card_extra_phosphates);
-                            if ( saltingUnit.isWith_phosphates() ){
-                                phosphates.setText(String.format(Locale.ENGLISH,"%.2f",saltingUnit.getPhosphates()));
-                                phosphates.setVisibility(View.VISIBLE);
-                            }else{
-                                phosphates.setVisibility(View.GONE);
-                            }
-
-                            TextInputEditText sodium_ascorbate =  cardView.findViewById(R.id.card_extra_sodium_ascorbate);
-                            if ( saltingUnit.isWith_sodium_ascorbate() ){
-                                sodium_ascorbate.setText(String.format(Locale.ENGLISH,"%.2f",saltingUnit.getSodium_ascorbate()));
-                                sodium_ascorbate.setVisibility(View.VISIBLE);
-                            }else{
-                                sodium_ascorbate.setVisibility(View.GONE);
-                            }
-
-
+                            fillView(R.id.card_extra_weight_meat, saltingUnit.getWeight_of_meat(), true);
+                            fillView(R.id.card_extra_rock_salt, saltingUnit.getRock_salt(), true);
+                            fillView(R.id.card_extra_nitrite_salt, saltingUnit.getNitrite_salt(), true);
+                            fillView(R.id.card_extra_brine, saltingUnit.getBrine(), saltingUnit.isWet_salting());
+                            fillView(R.id.card_extra_phosphates, saltingUnit.getPhosphates(), saltingUnit.isWith_phosphates());
+                            fillView(R.id.card_extra_sodium_ascorbate, saltingUnit.getSodium_ascorbate(), saltingUnit.isWith_sodium_ascorbate());
                         } else {
                             extraLayout.setVisibility(View.GONE);
                         }
                     TransitionManager.beginDelayedTransition((ViewGroup) view, new AutoTransition());
                 });
                 view = itemView;
+            }
+
+            private void fillView(int id, double value, boolean visible){
+                TextInputEditText view = cardView.findViewById(id);
+                if ( view == null )
+                    return;
+
+                if ( visible ){
+                    view.setText(String.format(Locale.ENGLISH,"%.2f", value));
+                    view.setVisibility(View.VISIBLE);
+                }else{
+                    view.setVisibility(View.GONE);
+                }
             }
 
             public void setSaltingInfo(SaltingUnit salting){
