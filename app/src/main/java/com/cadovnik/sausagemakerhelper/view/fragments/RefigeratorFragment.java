@@ -16,6 +16,10 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.cadovnik.sausagemakerhelper.R;
 import com.cadovnik.sausagemakerhelper.http.HttpConnectionHandler;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -42,9 +46,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -58,12 +59,9 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
         @Override
         public void onFailure(Call call, IOException e) {
             Log.e(e.getClass().toString(), "Error: " + e.toString());
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT);
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
+            getActivity().runOnUiThread(() -> {
+                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT);
+                mSwipeRefreshLayout.setRefreshing(false);
             });
         }
 
@@ -74,12 +72,9 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
                 jarray = new JSONArray(response.body().string());
             } catch (JSONException e) {
                 try {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                            mSwipeRefreshLayout.setRefreshing(false);
-                        }
+                    getActivity().runOnUiThread(() -> {
+                        Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                        mSwipeRefreshLayout.setRefreshing(false);
                     });
                 }
                 catch (NullPointerException ee){
@@ -89,12 +84,7 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
             }
             JSONArray finalJarray = jarray;
             try{
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        createLineGraph(finalJarray);
-                    }
-                });
+                getActivity().runOnUiThread(() -> createLineGraph(finalJarray));
             }catch (NullPointerException e) {
 
             }
@@ -103,12 +93,9 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
     private Callback lastedDataCallback = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
+            getActivity().runOnUiThread(() -> {
+                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                mSwipeRefreshLayout.setRefreshing(false);
             });
             Log.e(e.getClass().toString(), "Error: " + e.toString());
         }
@@ -119,21 +106,13 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
             try {
                 jarray = new JSONArray(response.body().string());
             } catch (JSONException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT);
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
+                getActivity().runOnUiThread(() -> {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT);
+                    mSwipeRefreshLayout.setRefreshing(false);
                 });
             }
             JSONArray finalJarray = jarray;
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    createLatesValueTable(finalJarray);
-                }
-            });
+            getActivity().runOnUiThread(() -> createLatesValueTable(finalJarray));
         }
     };
 
@@ -158,7 +137,6 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.refrigerate_chart, container, false);
-        HttpConnectionHandler.Initialize(getActivity().getResources().openRawResource(R.raw.certificate));
         mSwipeRefreshLayout = view.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         lastedTableLayout = view.findViewById(R.id.lasted_data_table);

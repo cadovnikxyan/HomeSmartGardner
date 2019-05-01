@@ -46,4 +46,8 @@
     <string name="sausage_sodium_ascorbate">Аскорбинат натрия</string>
     <string name="sausage_rock_salt">Каменная соль</string>
     <string name="sausage_options">Добавки</string>
+    <string name="heating_BoxTemp">Температура внутри</string>
+    <string name="heating_probeTemp">Температура продукта</string>
+    <string name="heat_waterPump">Пар</string>
+    <string name="heating_esp_getCurrentState">Текущее состояние</string>
 </resources>

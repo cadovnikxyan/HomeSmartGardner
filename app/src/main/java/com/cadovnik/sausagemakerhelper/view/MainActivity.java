@@ -4,13 +4,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.cadovnik.sausagemakerhelper.R;
-import com.cadovnik.sausagemakerhelper.view.fragments.HeatTreatmentFragment;
-import com.cadovnik.sausagemakerhelper.view.fragments.RefigeratorFragment;
-import com.cadovnik.sausagemakerhelper.view.fragments.SausageMakerFragment;
-import com.cadovnik.sausagemakerhelper.view.fragments.SausageNoteBookFragment;
-import com.google.android.material.navigation.NavigationView;
-
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -18,6 +11,14 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.cadovnik.sausagemakerhelper.R;
+import com.cadovnik.sausagemakerhelper.http.HttpConnectionHandler;
+import com.cadovnik.sausagemakerhelper.view.fragments.HeatTreatmentFragment;
+import com.cadovnik.sausagemakerhelper.view.fragments.RefigeratorFragment;
+import com.cadovnik.sausagemakerhelper.view.fragments.SausageMakerFragment;
+import com.cadovnik.sausagemakerhelper.view.fragments.SausageNoteBookFragment;
+import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,7 +35,8 @@ public class MainActivity extends AppCompatActivity
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar ,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
+        HttpConnectionHandler.Initialize(getResources().openRawResource(R.raw.certificate));
+        HttpConnectionHandler.InitializeRXDNS(getApplicationContext());
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 

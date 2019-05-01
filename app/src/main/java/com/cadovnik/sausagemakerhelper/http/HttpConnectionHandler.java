@@ -1,7 +1,12 @@
 package com.cadovnik.sausagemakerhelper.http;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.util.Log;
+
+import com.github.druk.rx2dnssd.BonjourService;
+import com.github.druk.rx2dnssd.Rx2Dnssd;
+import com.github.druk.rx2dnssd.Rx2DnssdEmbedded;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +23,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -26,16 +34,23 @@ import okhttp3.RequestBody;
 
 public class HttpConnectionHandler {
     private static final String Hostname = "cadovnik.fvds.ru";
-    private static final String ESP_Hostname = "cadovnik_esp8266.local";
+    public static final String ESP_Hostname = "cadovnik_esp8266.local.";
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static HttpConnectionHandler instance = null;
     private static SSLContext context;
     private static X509TrustManager trustManager;
-
+    protected Rx2Dnssd rxDnssd;
+    protected Disposable disposable;
+    private BonjourService bonjourService;
+    private String resultedESPIP = "";
     private OkHttpClient client;
 
     public static void Initialize(InputStream in){
         trustAllHosts(in);
+    }
+    public static void InitializeRXDNS(Context context){
+        getInstance().rxDnssd = new Rx2DnssdEmbedded(context);
+        getInstance().getHostnameUndermDNS();
     }
     public static HttpConnectionHandler getInstance(){
         if ( instance == null )
@@ -50,12 +65,51 @@ public class HttpConnectionHandler {
                 .build();
     }
 
+    private void getHostnameUndermDNS(){
+
+        disposable = rxDnssd.browse("_http._tcp.", "local.")
+                .compose(rxDnssd.resolve())
+                .compose(rxDnssd.queryIPRecords())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(bonjourService -> {
+                    if (!bonjourService.isLost()) {
+                        resultedESPIP = bonjourService.getInet4Address().getHostAddress();
+                        Log.e("DNSSD", bonjourService.getHostname());
+                        Log.e("DNSSD", bonjourService.getDomain());
+                        Log.e("DNSSD", bonjourService.getRegType());
+                        Log.e("DNSSD", bonjourService.getServiceName());
+                        Log.e("DNSSD", bonjourService.getInet4Address().getHostAddress());
+                        this.bonjourService = bonjourService;
+                    }
+                }, throwable -> {
+                    Log.e("DNSSD", "Error: ", throwable);
+                });
+    }
+
+    public void getESPRequest(String url, Callback callback){
+        if ( resultedESPIP.isEmpty() )
+            getHostnameUndermDNS();
+        StringBuilder builder = new StringBuilder();
+        builder.append("http://").append(resultedESPIP).append("/").append(url);
+        Log.e("getESPRequest", builder.toString());
+        getRequest(  builder.toString() , callback);
+    }
     public void getRequest(String url, Callback callback){
         Request request = new Request.Builder()
                 .url(url)
                 .build();
         client.newCall(request)
               .enqueue(callback);
+    }
+
+    public void postESPRequest(String url,  String json,Callback callback){
+        if ( resultedESPIP.isEmpty() )
+            getHostnameUndermDNS();
+        StringBuilder builder = new StringBuilder();
+        builder.append("http://").append(resultedESPIP).append("/").append(url);
+        Log.e("postESPRequest", builder.toString());
+        postRequest( builder.toString(),json , callback);
     }
 
     public void postRequest(String url, String json, Callback callback){

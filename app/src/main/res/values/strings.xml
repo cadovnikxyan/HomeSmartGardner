@@ -56,4 +56,8 @@
     <string name="sausage_sodium_ascorbate">Sodium ascorbate</string>
     <string name="sausage_rock_salt">Rock salt</string>
     <string name="sausage_options">Sausage options</string>
+    <string name="heating_probeTemp">Probe Temperature</string>
+    <string name="heating_BoxTemp">Inside Box Temperature</string>
+    <string name="heat_waterPump">Water Pump</string>
+    <string name="heating_esp_getCurrentState">Get Current State</string>
 </resources>

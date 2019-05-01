@@ -23,7 +23,7 @@
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/chartSmoking"
             android:layout_width="fill_parent"
-            android:layout_height="350dp"/>
+            android:layout_height="200dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
             android:id="@+id/probe_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:text="Probe Temperature"
+            app:text="@string/heating_probeTemp"
             app:image="@drawable/inside_product"
             android:layout_marginEnd="12dp"/>
 
@@ -41,7 +41,7 @@
             android:id="@+id/outside_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:text="Heater Box Temperature"
+            app:text="@string/heating_BoxTemp"
             app:image="@drawable/heater_box"
             android:layout_marginEnd="12dp"/>
 
@@ -70,6 +70,15 @@
                     android:paddingRight="5dp"
                     android:text="@string/heating_switch"
                     android:textSize="12sp" />
+                <Switch
+                    android:id="@+id/water"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:paddingRight="5dp"
+                    android:text="@string/heat_waterPump"
+                    android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -90,20 +99,12 @@
         android:layout_marginEnd="16dp">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/start_button"
+            android:id="@+id/get_current_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_colorNormal="@color/white"
             app:fab_icon="@drawable/round_sausage"
-            app:fab_title="Action1"
-            app:fab_colorPressed="@color/white_pressed"/>
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_b_222"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_title="Action2"
+            app:fab_title="@string/heating_esp_getCurrentState"
             app:fab_colorPressed="@color/white_pressed"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>

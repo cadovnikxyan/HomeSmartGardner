@@ -42,4 +42,5 @@ dependencies {
     implementation 'ru.rambler.android:swipe-layout:1.1.0'
     implementation 'androidx.viewpager:viewpager:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation "com.github.andriydruk:rx2dnssd:0.9.13"
 }

@@ -7,18 +7,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cadovnik.sausagemakerhelper.R;
-import com.cadovnik.sausagemakerhelper.view.MainActivity;
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.google.android.material.tabs.TabLayout;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+import com.cadovnik.sausagemakerhelper.R;
+import com.cadovnik.sausagemakerhelper.view.MainActivity;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.material.tabs.TabLayout;
 
 public class SausageNoteBookFragment extends Fragment {
 
@@ -65,8 +64,6 @@ public class SausageNoteBookFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        Log.d(this.getClass().getSimpleName(), "onDestroy: ");
     }
 
     public static class SausageNoteBookFragmentPagerAdapter extends FragmentPagerAdapter {
