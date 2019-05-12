@@ -60,4 +60,6 @@
     <string name="heating_BoxTemp">Inside Box Temperature</string>
     <string name="heat_waterPump">Water Pump</string>
     <string name="heating_esp_getCurrentState">Get Current State</string>
+    <string name="heating_change_mode">Change mode</string>
+    <string name="heating_ignition">Ignition</string>
 </resources>

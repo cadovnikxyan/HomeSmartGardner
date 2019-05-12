@@ -15,6 +15,12 @@ import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.cadovnik.sausagemakerhelper.R;
 import com.cadovnik.sausagemakerhelper.data.DataController;
 import com.cadovnik.sausagemakerhelper.data.SaltingUnit;
@@ -26,12 +32,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class SausageMakerFragment extends Fragment {
 
@@ -211,6 +211,7 @@ public class SausageMakerFragment extends Fragment {
             notifyDataSetChanged();
 
         }
+        public List<Pair<String, String>> getSpices(){return spices;}
 
         public void addItems(List<Pair<String, String>>  items){
             saltings = items;

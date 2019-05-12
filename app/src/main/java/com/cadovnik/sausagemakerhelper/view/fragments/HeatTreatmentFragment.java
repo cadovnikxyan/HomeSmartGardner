@@ -24,6 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,12 +37,13 @@ public class HeatTreatmentFragment extends Fragment {
     private final String[] modes ={"Manual", "Auto", "Smoking", "No Heating"};
     private static HeatTreatmentFragment instance = null;
     private JSONObject currentState = new JSONObject();
+    private boolean fromJSONState = false;
     private Callback espGetCurrentStateCallback = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
             Log.e(this.getClass().toString(), "Error: " + e.toString());
             getActivity().runOnUiThread(() -> {
-                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT);
+                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -49,7 +52,9 @@ public class HeatTreatmentFragment extends Fragment {
             try {
                 JSONObject jobj = new JSONObject(response.body().string());
                 getActivity().runOnUiThread(() -> {
+                    fromJSONState = true;
                     setCurrentState(jobj);
+                    fromJSONState = false;
                     Log.e(this.getClass().toString(), "JSON ESP: " + jobj.toString());
                 });
             } catch (JSONException e) {
@@ -64,17 +69,22 @@ public class HeatTreatmentFragment extends Fragment {
         public void onFailure(Call call, IOException e) {
             Log.e(this.getClass().toString(), "Error: " + e.toString());
             getActivity().runOnUiThread(() -> {
-                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT);
+                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
             });
         }
 
         @Override
         public void onResponse(Call call, Response response) throws IOException {
-            String res = response.body().string();
-            getActivity().runOnUiThread(() -> {
-                    Log.e(this.getClass().toString(), res);
-                    Toast.makeText(getContext(), res, Toast.LENGTH_SHORT);
-            });
+            try {
+                JSONObject jobj = new JSONObject(response.body().string());
+                getActivity().runOnUiThread(() -> {
+                    fromJSONState = true;
+                    setCurrentState(jobj);
+                    fromJSONState = false;
+                });
+            } catch (JSONException e) {
+                Log.e(this.getClass().toString(), "JSON ESP: " , e);
+            }
         }
     };
 
@@ -95,6 +105,7 @@ public class HeatTreatmentFragment extends Fragment {
             text.setText(modes[item]);
         });
         builder.setCancelable(false);
+
     }
 
     @Override
@@ -103,8 +114,8 @@ public class HeatTreatmentFragment extends Fragment {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.heat_treatment, container, false);
 
-        TextView text = view.findViewById(R.id.currentMode);
-        text.setOnClickListener(v -> builder.show());
+        FloatingActionButton changeMode = view.findViewById(R.id.change_mode);
+        changeMode.setOnClickListener(v -> builder.show());
 
         HeatingView outsideTemp = view.findViewById(R.id.outside_temp);
         outsideTemp.setOnClickListener(v -> HeatingNotification.sendNotify(getActivity().getApplicationContext(),"Test outside"));
@@ -115,7 +126,7 @@ public class HeatTreatmentFragment extends Fragment {
             try {
                 currentState.remove("convectionState");
                 currentState.put("convectionState", isChecked);
-                HeatTreatmentFragment.this.sendCurrentState();
+                sendCurrentState();
             } catch (JSONException e) {
                 Log.e(HeatTreatmentFragment.this.getClass().toString(), "JSON ESP: ", e);
             }
@@ -138,8 +149,69 @@ public class HeatTreatmentFragment extends Fragment {
                 Log.e(this.getClass().toString(), "JSON ESP: " , e);
             }
         });
+
+        ((Switch)view.findViewById(R.id.ignition)).setOnCheckedChangeListener((buttonView, isChecked) -> {
+            try {
+                currentState.remove("ignitionState");
+                currentState.put("ignitionState", isChecked);
+                sendCurrentState();
+            } catch (JSONException e) {
+                Log.e(this.getClass().toString(), "JSON ESP: " , e);
+            }
+        });
         FloatingActionButton getCurrentState = view.findViewById(R.id.get_current_state);
         getCurrentState.setOnClickListener(v -> HttpConnectionHandler.getInstance().getESPRequest("GetCurrentState", espGetCurrentStateCallback));
+        if ( !HttpConnectionHandler.getInstance().IsFindedESP()){
+            view.findViewById(R.id.convectionOnOff).setEnabled(false);
+            view.findViewById(R.id.heating).setEnabled(false);
+            view.findViewById(R.id.water).setEnabled(false);
+        }
+        Timer timerDNS = new Timer();
+        timerDNS.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                try{
+                    if ( !HttpConnectionHandler.getInstance().IsFindedESP()){
+                        getActivity().runOnUiThread(() -> {
+                            getView().findViewById(R.id.convectionOnOff).setEnabled(false);
+                            getView().findViewById(R.id.heating).setEnabled(false);
+                            getView().findViewById(R.id.water).setEnabled(false);
+                            getView().findViewById(R.id.ignition).setEnabled(false);
+                        });
+                    }
+                    else{
+                        getActivity().runOnUiThread(() -> {
+                            getView().findViewById(R.id.convectionOnOff).setEnabled(true);
+                            getView().findViewById(R.id.heating).setEnabled(true);
+                            getView().findViewById(R.id.water).setEnabled(true);
+                            getView().findViewById(R.id.ignition).setEnabled(true);
+                            this.cancel();
+                        });
+                    }
+                }catch (NullPointerException e){
+                    Log.e(this.getClass().toString(), "Timer: " , e);
+                }
+
+            }
+        }, 0, 300);
+        Timer currentStateTimer = new Timer();
+        currentStateTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                try{
+                    if ( HttpConnectionHandler.getInstance().IsFindedESP()){
+                        HttpConnectionHandler.getInstance().getESPRequest("GetCurrentState", espGetCurrentStateCallback);
+                    }
+                    else{
+                        getActivity().runOnUiThread(() -> {
+                            Toast.makeText(getContext(), "Connection to ESP isn`t exists", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                }catch (NullPointerException e){
+                    Log.e(this.getClass().toString(), "Timer: " , e);
+                }
+            }
+        }, 0, 10000);
         return view;
     }
 
@@ -151,13 +223,17 @@ public class HeatTreatmentFragment extends Fragment {
             ((Switch)getView().findViewById(R.id.convectionOnOff)).setChecked(currentState.getBoolean("convectionState"));
             ((Switch)getView().findViewById(R.id.heating)).setChecked(currentState.getBoolean("heatingState"));
             ((Switch)getView().findViewById(R.id.water)).setChecked(currentState.getBoolean("waterPumpState"));
+            ((Switch)getView().findViewById(R.id.ignition)).setChecked(currentState.getBoolean("ignitionState"));
+            ((HeatingView)getView().findViewById(R.id.probe_temp)).addTextOnImage(currentState.getString("currentProbeTemp"));
+            ((HeatingView)getView().findViewById(R.id.outside_temp)).addTextOnImage(currentState.getString("currentOutTemp"));
         }catch (JSONException e){
             Log.e(this.getClass().toString(), "JSON ESP: " , e);
         }
     }
 
     private void sendCurrentState(){
-        HttpConnectionHandler.getInstance().postESPRequest("SetState", currentState.toString(), espSetCurrentStateCallback);
+        if (!fromJSONState)
+            HttpConnectionHandler.getInstance().postESPRequest("SetState", currentState.toString(), espSetCurrentStateCallback);
     }
 
     @Override

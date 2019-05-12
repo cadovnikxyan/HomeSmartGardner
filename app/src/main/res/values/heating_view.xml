@@ -3,5 +3,7 @@
     <declare-styleable name="HeatingView">
         <attr name="image" format="reference"/>
         <attr name="text" format="string"/>
+        <attr name="leftTop" format="integer"/>
+        <attr name="rightBottom" format="integer"/>
     </declare-styleable>
 </resources>

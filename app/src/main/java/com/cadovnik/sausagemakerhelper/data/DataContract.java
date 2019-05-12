@@ -40,7 +40,7 @@ public class DataContract {
         }
         public final static String createTableString(){
             return String.format(CREATE_TABLE_FIRST_LINE, TABLE_NAME)
-                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key autoincrement") + ","
+                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key") + ","
                     + String.format(TABLE_COLUMN, COLUMN_MODE, "text", "") + ","
                     + String.format(TABLE_COLUMN, COLUMN_PROBE_TEMP, "text", "") + ","
                     + String.format(TABLE_COLUMN, COLUMN_TEMP, "text", "") + ","
@@ -72,7 +72,7 @@ public class DataContract {
 
         public final static String createTableString(){
             return String.format(CREATE_TABLE_FIRST_LINE, TABLE_NAME)
-                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key autoincrement") + ","
+                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key") + ","
                     + String.format(TABLE_COLUMN, COLUMN_UNIT, "text", "") + ","
                     + String.format(TABLE_COLUMN, COLUMN_START_DATE, "text", "") + ","
                     + String.format(TABLE_COLUMN, COLUMN_STOP_DATE, "text", "") + ","
@@ -96,7 +96,7 @@ public class DataContract {
         }
         public final static String createTableString(){
             return String.format(CREATE_TABLE_FIRST_LINE, TABLE_NAME)
-                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key autoincrement") + ","
+                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key") + ","
                     + String.format(TABLE_COLUMN, COLUMN_PROCESSES, "text", "") + ","
                     + String.format(TABLE_COLUMN, COLUMN_DATE, "text", "")
                     + CREATE_TABLE_END_LINE;
@@ -131,7 +131,7 @@ public class DataContract {
 
         public final static String createTableString(){
             return String.format(CREATE_TABLE_FIRST_LINE, TABLE_NAME)
-                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key autoincrement") + ","
+                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key") + ","
                     + String.format(TABLE_COLUMN, COLUMN_SAUSAGE_NAME, "text", "") + ","
                     + String.format(TABLE_COLUMN, COLUMN_MEAT_WEIGHT, "text", "") + ","
                     + String.format(TABLE_COLUMN, COLUMN_ROCK_SALT_WEIGHT, "text", "") + ","
@@ -158,7 +158,7 @@ public class DataContract {
 
         public final static String createTableString(){
             return String.format(CREATE_TABLE_FIRST_LINE, TABLE_NAME)
-                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key autoincrement") + ","
+                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key") + ","
                     + String.format(TABLE_COLUMN, COLUMN_SALTINGS, "text", "")
                     + CREATE_TABLE_END_LINE;
         }
@@ -172,6 +172,7 @@ public class DataContract {
         public final static String COLUMN_SAUSAGE_DESCRIPTION = "SausageDescription";
         public final static String COLUMN_HEATING_PROCESS = "HeatingProcess";
         public final static String COLUMN_SAUSAGE_IMAGE = "SausageImage";
+        public final static String COLUMN_SAUSAGE_SPICE = "SausageSpice";
 
         public final static Map<String,Integer> getIndexes(Cursor cursor){
             Map<String,Integer> indexes = new HashMap<>();
@@ -181,17 +182,19 @@ public class DataContract {
             indexes.put(COLUMN_SAUSAGE_DESCRIPTION, cursor.getColumnIndex(COLUMN_SAUSAGE_DESCRIPTION));
             indexes.put(COLUMN_HEATING_PROCESS, cursor.getColumnIndex(COLUMN_HEATING_PROCESS));
             indexes.put(COLUMN_SAUSAGE_IMAGE, cursor.getColumnIndex(COLUMN_SAUSAGE_IMAGE));
+            indexes.put(COLUMN_SAUSAGE_SPICE, cursor.getColumnIndex(COLUMN_SAUSAGE_SPICE));
             return indexes;
         }
 
         public final static String createTableString(){
             return String.format(CREATE_TABLE_FIRST_LINE, TABLE_NAME)
-                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key autoincrement") + ","
+                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key") + ","
                     + String.format(TABLE_COLUMN, COLUMN_SAUSAGE_NAME, "text", "") + ","
                     + String.format(TABLE_COLUMN, COLUMN_SALTING_UNIT, "text", "") + ","
                     + String.format(TABLE_COLUMN, COLUMN_SAUSAGE_DESCRIPTION, "text", "") + ","
                     + String.format(TABLE_COLUMN, COLUMN_HEATING_PROCESS, "text", "") + ","
-                    + String.format(TABLE_COLUMN, COLUMN_SAUSAGE_IMAGE, "text", "")
+                    + String.format(TABLE_COLUMN, COLUMN_SAUSAGE_IMAGE, "text", "") + ","
+                    + String.format(TABLE_COLUMN, COLUMN_SAUSAGE_SPICE, "text", "")
                     + CREATE_TABLE_END_LINE;
         }
     }

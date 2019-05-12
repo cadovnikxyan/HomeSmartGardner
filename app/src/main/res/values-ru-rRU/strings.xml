@@ -50,4 +50,6 @@
     <string name="heating_probeTemp">Температура продукта</string>
     <string name="heat_waterPump">Пар</string>
     <string name="heating_esp_getCurrentState">Текущее состояние</string>
+    <string name="heating_change_mode">Сменить режим</string>
+    <string name="heating_ignition">Поджиг</string>
 </resources>

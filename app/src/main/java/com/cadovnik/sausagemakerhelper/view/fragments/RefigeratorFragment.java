@@ -60,7 +60,7 @@ public class RefigeratorFragment extends Fragment implements SwipeRefreshLayout.
         public void onFailure(Call call, IOException e) {
             Log.e(e.getClass().toString(), "Error: " + e.toString());
             getActivity().runOnUiThread(() -> {
-                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT);
+                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 mSwipeRefreshLayout.setRefreshing(false);
             });
         }

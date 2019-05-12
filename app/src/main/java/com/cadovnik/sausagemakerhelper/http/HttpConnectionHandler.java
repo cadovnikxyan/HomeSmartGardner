@@ -50,7 +50,7 @@ public class HttpConnectionHandler {
     }
     public static void InitializeRXDNS(Context context){
         getInstance().rxDnssd = new Rx2DnssdEmbedded(context);
-        getInstance().getHostnameUndermDNS();
+        getInstance().FindHostnameUnder_mDNS();
     }
     public static HttpConnectionHandler getInstance(){
         if ( instance == null )
@@ -65,7 +65,7 @@ public class HttpConnectionHandler {
                 .build();
     }
 
-    private void getHostnameUndermDNS(){
+    public void FindHostnameUnder_mDNS(){
 
         disposable = rxDnssd.browse("_http._tcp.", "local.")
                 .compose(rxDnssd.resolve())
@@ -75,11 +75,6 @@ public class HttpConnectionHandler {
                 .subscribe(bonjourService -> {
                     if (!bonjourService.isLost()) {
                         resultedESPIP = bonjourService.getInet4Address().getHostAddress();
-                        Log.e("DNSSD", bonjourService.getHostname());
-                        Log.e("DNSSD", bonjourService.getDomain());
-                        Log.e("DNSSD", bonjourService.getRegType());
-                        Log.e("DNSSD", bonjourService.getServiceName());
-                        Log.e("DNSSD", bonjourService.getInet4Address().getHostAddress());
                         this.bonjourService = bonjourService;
                     }
                 }, throwable -> {
@@ -87,9 +82,13 @@ public class HttpConnectionHandler {
                 });
     }
 
+    public boolean IsFindedESP(){
+        return !resultedESPIP.isEmpty();
+    }
+
     public void getESPRequest(String url, Callback callback){
         if ( resultedESPIP.isEmpty() )
-            getHostnameUndermDNS();
+            rxDnssd.resolve();
         StringBuilder builder = new StringBuilder();
         builder.append("http://").append(resultedESPIP).append("/").append(url);
         Log.e("getESPRequest", builder.toString());
@@ -104,8 +103,14 @@ public class HttpConnectionHandler {
     }
 
     public void postESPRequest(String url,  String json,Callback callback){
-        if ( resultedESPIP.isEmpty() )
-            getHostnameUndermDNS();
+        if ( resultedESPIP.isEmpty() ){
+            rxDnssd.resolve();
+            try {
+                this.wait(100);
+            } catch (InterruptedException e) {
+                Log.e("postESPRequest", e.toString());
+            }
+        }
         StringBuilder builder = new StringBuilder();
         builder.append("http://").append(resultedESPIP).append("/").append(url);
         Log.e("postESPRequest", builder.toString());
