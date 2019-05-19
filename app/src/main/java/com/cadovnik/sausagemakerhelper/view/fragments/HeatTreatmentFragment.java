@@ -2,28 +2,33 @@ package com.cadovnik.sausagemakerhelper.view.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.cadovnik.sausagemakerhelper.R;
 import com.cadovnik.sausagemakerhelper.http.HttpConnectionHandler;
 import com.cadovnik.sausagemakerhelper.services.HeatingNotification;
 import com.cadovnik.sausagemakerhelper.view.HeatingView;
-import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,12 +37,13 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 @SuppressLint("ValidFragment")
-public class HeatTreatmentFragment extends Fragment {
+public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, SwipeRefreshLayout.OnDragListener{
     private AlertDialog.Builder builder;
-    private final String[] modes ={"Manual", "Auto", "Smoking", "No Heating"};
+    private final String[] modes = {"Manual", "Auto", "Smoking", "No Heating"};
     private static HeatTreatmentFragment instance = null;
     private JSONObject currentState = new JSONObject();
     private boolean fromJSONState = false;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private Callback espGetCurrentStateCallback = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
@@ -60,6 +66,7 @@ public class HeatTreatmentFragment extends Fragment {
             } catch (JSONException e) {
                 Log.e(this.getClass().toString(), "JSON ESP: " , e);
             }
+            swipeRefreshLayout.setRefreshing(false);
 
         }
     };
@@ -113,10 +120,7 @@ public class HeatTreatmentFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.heat_treatment, container, false);
-
-        FloatingActionButton changeMode = view.findViewById(R.id.change_mode);
-        changeMode.setOnClickListener(v -> builder.show());
-
+        swipeRefreshLayout = view.findViewById(R.id.swipe_container);
         HeatingView outsideTemp = view.findViewById(R.id.outside_temp);
         outsideTemp.setOnClickListener(v -> HeatingNotification.sendNotify(getActivity().getApplicationContext(),"Test outside"));
         HeatingView probeTemp = view.findViewById(R.id.probe_temp);
@@ -159,8 +163,7 @@ public class HeatTreatmentFragment extends Fragment {
                 Log.e(this.getClass().toString(), "JSON ESP: " , e);
             }
         });
-        FloatingActionButton getCurrentState = view.findViewById(R.id.get_current_state);
-        getCurrentState.setOnClickListener(v -> HttpConnectionHandler.getInstance().getESPRequest("GetCurrentState", espGetCurrentStateCallback));
+
         if ( !HttpConnectionHandler.getInstance().IsFindedESP()){
             view.findViewById(R.id.convectionOnOff).setEnabled(false);
             view.findViewById(R.id.heating).setEnabled(false);
@@ -212,6 +215,14 @@ public class HeatTreatmentFragment extends Fragment {
                 }
             }
         }, 0, 10000);
+
+        Spinner currentMode = view.findViewById(R.id.currentMode);
+        ArrayList<String> modesArray = new ArrayList<>();
+        for ( String mode : modes )
+            modesArray.add(mode);
+        HeatTreatmentModeAdapter heatTreatmentModeAdapter = new HeatTreatmentModeAdapter(getContext(), 0, modesArray);
+        currentMode.setAdapter(heatTreatmentModeAdapter);
+
         return view;
     }
 
@@ -226,6 +237,7 @@ public class HeatTreatmentFragment extends Fragment {
             ((Switch)getView().findViewById(R.id.ignition)).setChecked(currentState.getBoolean("ignitionState"));
             ((HeatingView)getView().findViewById(R.id.probe_temp)).addTextOnImage(currentState.getString("currentProbeTemp"));
             ((HeatingView)getView().findViewById(R.id.outside_temp)).addTextOnImage(currentState.getString("currentOutTemp"));
+            ((TextView)getView().findViewById(R.id.currentHeatStatus)).setText(currentState.getString("heatingMode"));
         }catch (JSONException e){
             Log.e(this.getClass().toString(), "JSON ESP: " , e);
         }
@@ -247,5 +259,38 @@ public class HeatTreatmentFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle(R.string.heat_treatment);
+    }
+
+    @Override
+    public boolean onDrag(View v, DragEvent event) {
+        return false;
+    }
+
+    @Override
+    public void onRefresh() {
+        swipeRefreshLayout.setRefreshing(true);
+        HttpConnectionHandler.getInstance().getESPRequest("GetCurrentState", espGetCurrentStateCallback);
+    }
+
+    public static class HeatTreatmentModeAdapter extends ArrayAdapter<ArrayList> {
+
+        public HeatTreatmentModeAdapter(Context context, int resource, ArrayList objects) {
+            super(context, resource, objects);
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            return null;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return null;
+
+        }
+
+        private class ViewHolder {
+            private TextView text;
+        }
     }
 }
