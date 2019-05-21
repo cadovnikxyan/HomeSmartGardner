@@ -62,4 +62,13 @@
     <string name="heating_esp_getCurrentState">Get Current State</string>
     <string name="heating_change_mode">Change mode</string>
     <string name="heating_ignition">Ignition</string>
+    <string name="heating_heat_state_none">None</string>
+    <string name="heating_heat_state_drying">Drying</string>
+    <string name="heating_heat_state_frying">Frying</string>
+    <string name="heating_heat_state_boiling">Boiling</string>
+    <string name="heating_heat_mode_manual">Manual</string>
+    <string name="heating_heat_mode_auto">Auto</string>
+    <string name="heating_heat_mode_smoking">Smoking</string>
+    <string name="heating_heat_mode_title">Mode:</string>
+    <string name="heating_heat_status_title">State:</string>
 </resources>

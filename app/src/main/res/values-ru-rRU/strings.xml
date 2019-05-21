@@ -52,4 +52,13 @@
     <string name="heating_esp_getCurrentState">Текущее состояние</string>
     <string name="heating_change_mode">Сменить режим</string>
     <string name="heating_ignition">Поджиг</string>
+    <string name="heating_heat_state_boiling">Варка</string>
+    <string name="heating_heat_state_drying">Сушка</string>
+    <string name="heating_heat_state_frying">Жарка</string>
+    <string name="heating_heat_state_none">Без нагрева</string>
+    <string name="heating_heat_mode_auto">Авто</string>
+    <string name="heating_heat_mode_manual">Ручной</string>
+    <string name="heating_heat_mode_smoking">Копчение</string>
+    <string name="heating_heat_mode_title">Режим:</string>
+    <string name="heating_heat_status_title">Статус:</string>
 </resources>

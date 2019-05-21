@@ -105,11 +105,11 @@ public class HttpConnectionHandler {
     public void postESPRequest(String url,  String json,Callback callback){
         if ( resultedESPIP.isEmpty() ){
             rxDnssd.resolve();
-            try {
-                this.wait(100);
-            } catch (InterruptedException e) {
-                Log.e("postESPRequest", e.toString());
-            }
+//            try {
+//                this.wait(100);
+//            } catch (InterruptedException e) {
+//                Log.e("postESPRequest", e.toString());
+//            }
         }
         StringBuilder builder = new StringBuilder();
         builder.append("http://").append(resultedESPIP).append("/").append(url);

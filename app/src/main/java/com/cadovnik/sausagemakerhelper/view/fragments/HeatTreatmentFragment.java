@@ -1,7 +1,6 @@
 package com.cadovnik.sausagemakerhelper.view.fragments;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,7 +8,9 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -29,6 +30,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,8 +43,10 @@ import okhttp3.Response;
 
 @SuppressLint("ValidFragment")
 public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, SwipeRefreshLayout.OnDragListener{
-    private AlertDialog.Builder builder;
-    private final String[] modes = {"Manual", "Auto", "Smoking", "No Heating"};
+    private final Map<String, Integer> modes = new HashMap();
+    private final Map<Integer, String> heatingStates = new HashMap();
+    private List<String> modesArray = new ArrayList<>();
+    private ArrayAdapter<String>  heatTreatmentModeAdapter;
     private static HeatTreatmentFragment instance = null;
     private JSONObject currentState = new JSONObject();
     private boolean fromJSONState = false;
@@ -105,14 +112,16 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Choice Heating Mode");
-        builder.setItems(modes, (dialog, item) -> {
-            TextView text = getView().findViewById(R.id.currentMode);
-            text.setText(modes[item]);
-        });
-        builder.setCancelable(false);
+        modes.clear();
+        modes.put(getResources().getString(R.string.heating_heat_mode_manual), 0x1000000);
+        modes.put(getResources().getString(R.string.heating_heat_mode_auto), 0x2000000);
+        modes.put(getResources().getString(R.string.heating_heat_mode_smoking), 0x3000000);
 
+        heatingStates.clear();
+        heatingStates.put(0x0010000, getResources().getString(R.string.heating_heat_state_none));
+        heatingStates.put(0x0020000, getResources().getString(R.string.heating_heat_state_drying));
+        heatingStates.put(0x0030000, getResources().getString(R.string.heating_heat_state_frying));
+        heatingStates.put(0x0040000, getResources().getString(R.string.heating_heat_state_boiling));
     }
 
     @Override
@@ -153,7 +162,6 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
                 Log.e(this.getClass().toString(), "JSON ESP: " , e);
             }
         });
-
         ((Switch)view.findViewById(R.id.ignition)).setOnCheckedChangeListener((buttonView, isChecked) -> {
             try {
                 currentState.remove("ignitionState");
@@ -217,11 +225,32 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
         }, 0, 10000);
 
         Spinner currentMode = view.findViewById(R.id.currentMode);
-        ArrayList<String> modesArray = new ArrayList<>();
-        for ( String mode : modes )
+
+        for ( String mode : modes.keySet() )
             modesArray.add(mode);
-        HeatTreatmentModeAdapter heatTreatmentModeAdapter = new HeatTreatmentModeAdapter(getContext(), 0, modesArray);
+
+        Collections.reverse(modesArray);
+        heatTreatmentModeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, modesArray);
+        heatTreatmentModeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         currentMode.setAdapter(heatTreatmentModeAdapter);
+        currentMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String currentString = modesArray.get(position);
+                Integer modValue = modes.get(currentString);
+                try {
+                    currentState.put("mode", modValue);
+                    sendCurrentState();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         return view;
     }
@@ -229,17 +258,23 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
     private void setCurrentState(JSONObject object){
         try{
             currentState = object;
-            TextView text = getView().findViewById(R.id.currentMode);
-            text.setText(currentState.getString("mode"));
+            Spinner currentMode = getView().findViewById(R.id.currentMode);
+            Integer modeInt = modes.get(currentState.getInt("mode"));
+            for (int i = 0; i < modesArray.size(); ++i ) {
+                if ( modes.get(modesArray.get(i)).equals(modeInt))
+                    currentMode.setSelection(i);
+            }
             ((Switch)getView().findViewById(R.id.convectionOnOff)).setChecked(currentState.getBoolean("convectionState"));
             ((Switch)getView().findViewById(R.id.heating)).setChecked(currentState.getBoolean("heatingState"));
             ((Switch)getView().findViewById(R.id.water)).setChecked(currentState.getBoolean("waterPumpState"));
             ((Switch)getView().findViewById(R.id.ignition)).setChecked(currentState.getBoolean("ignitionState"));
-            ((HeatingView)getView().findViewById(R.id.probe_temp)).addTextOnImage(currentState.getString("currentProbeTemp"));
-            ((HeatingView)getView().findViewById(R.id.outside_temp)).addTextOnImage(currentState.getString("currentOutTemp"));
-            ((TextView)getView().findViewById(R.id.currentHeatStatus)).setText(currentState.getString("heatingMode"));
+            ((HeatingView)getView().findViewById(R.id.probe_temp)).addTextOnImage(currentState.getString("currentProbeTemp") + " \u2103");
+            ((HeatingView)getView().findViewById(R.id.outside_temp)).addTextOnImage(currentState.getString("currentOutTemp") + " \u2103");
+            ((TextView)getView().findViewById(R.id.currentHeatStatus)).setText(heatingStates.get(currentState.getInt("heatingMode")));
         }catch (JSONException e){
             Log.e(this.getClass().toString(), "JSON ESP: " , e);
+        }catch (NullPointerException e ){
+            Log.e(this.getClass().toString(), "NullPointer ESP: " , e);
         }
     }
 
@@ -272,20 +307,44 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
         HttpConnectionHandler.getInstance().getESPRequest("GetCurrentState", espGetCurrentStateCallback);
     }
 
-    public static class HeatTreatmentModeAdapter extends ArrayAdapter<ArrayList> {
+    public static class HeatTreatmentModeAdapter extends ArrayAdapter<ArrayList> implements AdapterView.OnItemSelectedListener {
+
+        private ArrayList<String> values = new ArrayList<>();
 
         public HeatTreatmentModeAdapter(Context context, int resource, ArrayList objects) {
             super(context, resource, objects);
+            values = objects;
+        }
+
+        public void setCurrentItem(String item){
+
         }
 
         @Override
         public View getDropDownView(int position, View convertView, ViewGroup parent) {
-            return null;
+            LinearLayout linearLayout = new LinearLayout(parent.getContext(), null, LinearLayout.VERTICAL );
+            for (String v : values ){
+                TextView view = new TextView(getContext());
+                view.setText(v);
+                view.setEnabled(false);
+                linearLayout.addView(view);
+            }
+            return linearLayout;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             return null;
+
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
 
         }
 

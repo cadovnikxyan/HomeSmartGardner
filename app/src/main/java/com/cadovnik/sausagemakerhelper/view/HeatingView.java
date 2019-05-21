@@ -68,8 +68,8 @@ public class HeatingView extends LinearLayout {
             // draw text to the Canvas center
             Rect bounds = new Rect();
             paint.getTextBounds(text, 0, text.length(), bounds);
-            int x = (bitmap.getWidth() - bounds.width())/6;
-            int y = (bitmap.getHeight() + bounds.height())/5;
+            int x = leftTop;
+            int y = rightBottom;
 
             canvas.drawText(text, x * scale, y * scale, paint);
             image.setImageBitmap(bitmap);
