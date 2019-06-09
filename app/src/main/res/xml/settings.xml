@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/smokehouse_settings">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="esp_soft_ap"
+            android:title="@string/esp_soft_ap" />
+        <EditTextPreference
+            android:key="esp_ip"
+            android:defaultValue="192.168.4.22"
+            android:summary="192.168.4.22"
+            android:title="ESP IP">
+        </EditTextPreference>
+    </PreferenceCategory>
+</PreferenceScreen>

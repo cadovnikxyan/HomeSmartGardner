@@ -64,7 +64,7 @@ public class HeatingProcess implements IDBHelper {
     }
 
     @Override
-    public int getId() {
+    public long getId() {
         return 0;
     }
 

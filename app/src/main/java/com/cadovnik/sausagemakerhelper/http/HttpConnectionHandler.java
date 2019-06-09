@@ -2,6 +2,8 @@ package com.cadovnik.sausagemakerhelper.http;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.github.druk.rx2dnssd.BonjourService;
@@ -34,34 +36,44 @@ import okhttp3.RequestBody;
 
 public class HttpConnectionHandler {
     private static final String Hostname = "cadovnik.fvds.ru";
-    public static final String ESP_Hostname = "cadovnik_esp8266.local.";
+    public static String ESP_Hostname = "cadovnik_esp8266.local.";
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static HttpConnectionHandler instance = null;
-    private static SSLContext context;
+    private static SSLContext sslContext;
     private static X509TrustManager trustManager;
     protected Rx2Dnssd rxDnssd;
     protected Disposable disposable;
     private BonjourService bonjourService;
     private String resultedESPIP = "";
     private OkHttpClient client;
+    private Context AppContext;
+    private boolean Esp_soft_ap = false;
 
-    public static void Initialize(InputStream in){
+    public static void Initialize(Context context, InputStream in){
         trustAllHosts(in);
+        getInstance().AppContext = context;
     }
-    public static void InitializeRXDNS(Context context){
-        getInstance().rxDnssd = new Rx2DnssdEmbedded(context);
-        getInstance().FindHostnameUnder_mDNS();
+    public static void InitializeRXDNS(){
+            getInstance().rxDnssd = new Rx2DnssdEmbedded(instance.AppContext);
+            getInstance().FindHostnameUnder_mDNS();
     }
     public static HttpConnectionHandler getInstance(){
         if ( instance == null )
             instance = new HttpConnectionHandler();
+
+        if ( instance.AppContext != null ){
+            SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(instance.AppContext);
+            instance.resultedESPIP = SP.getString("esp_ip","");
+            instance.Esp_soft_ap = SP.getBoolean("esp_soft_ap", false);
+        }
+
         return instance;
     }
 
     private HttpConnectionHandler(){
         HostnameVerifier hostnameVerifier = (hostname, session) -> hostname.equals(Hostname) || hostname.equals(ESP_Hostname);
         client = new OkHttpClient.Builder().hostnameVerifier(hostnameVerifier)
-                .sslSocketFactory(context.getSocketFactory(), trustManager)
+                .sslSocketFactory(sslContext.getSocketFactory(), trustManager)
                 .build();
     }
 
@@ -87,7 +99,7 @@ public class HttpConnectionHandler {
     }
 
     public void getESPRequest(String url, Callback callback){
-        if ( resultedESPIP.isEmpty() )
+        if ( !Esp_soft_ap && resultedESPIP.isEmpty() )
             rxDnssd.resolve();
         StringBuilder builder = new StringBuilder();
         builder.append("http://").append(resultedESPIP).append("/").append(url);
@@ -103,13 +115,8 @@ public class HttpConnectionHandler {
     }
 
     public void postESPRequest(String url,  String json,Callback callback){
-        if ( resultedESPIP.isEmpty() ){
+        if ( !Esp_soft_ap && resultedESPIP.isEmpty() ){
             rxDnssd.resolve();
-//            try {
-//                this.wait(100);
-//            } catch (InterruptedException e) {
-//                Log.e("postESPRequest", e.toString());
-//            }
         }
         StringBuilder builder = new StringBuilder();
         builder.append("http://").append(resultedESPIP).append("/").append(url);
@@ -144,8 +151,8 @@ public class HttpConnectionHandler {
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
             tmf.init(keyStore);
             trustManager = (X509TrustManager) tmf.getTrustManagers()[0];
-            context = SSLContext.getInstance("TLS");
-            context.init(null, tmf.getTrustManagers(), null);
+            sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, tmf.getTrustManagers(), null);
         }catch (CertificateException e){
             Log.e(e.getClass().toString(), "Error: " + e.toString());
         }catch (KeyStoreException e){

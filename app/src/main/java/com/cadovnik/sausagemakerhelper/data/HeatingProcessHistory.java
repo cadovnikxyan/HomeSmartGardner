@@ -26,7 +26,7 @@ public class HeatingProcessHistory implements IDBHelper {
     }
 
     @Override
-    public int getId() {
+    public long getId() {
         return 0;
     }
 

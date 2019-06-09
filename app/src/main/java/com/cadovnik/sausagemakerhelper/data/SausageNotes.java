@@ -4,10 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.Nullable;
 
 public class SausageNotes implements IDBHelper {
     private List<SausageNote> notes = new ArrayList<>();
@@ -30,7 +30,7 @@ public class SausageNotes implements IDBHelper {
     }
 
     @Override
-    public int getId() {
+    public long getId() {
         return 0;
     }
 

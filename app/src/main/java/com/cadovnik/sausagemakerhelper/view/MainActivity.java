@@ -1,5 +1,6 @@
 package com.cadovnik.sausagemakerhelper.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +19,7 @@ import com.cadovnik.sausagemakerhelper.view.fragments.HeatTreatmentFragment;
 import com.cadovnik.sausagemakerhelper.view.fragments.RefigeratorFragment;
 import com.cadovnik.sausagemakerhelper.view.fragments.SausageMakerFragment;
 import com.cadovnik.sausagemakerhelper.view.fragments.SausageNoteBookFragment;
+import com.cadovnik.sausagemakerhelper.view.fragments.SettingsActivity;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity
@@ -35,8 +37,8 @@ public class MainActivity extends AppCompatActivity
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar ,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        HttpConnectionHandler.Initialize(getResources().openRawResource(R.raw.certificate));
-        HttpConnectionHandler.InitializeRXDNS(getApplicationContext());
+        HttpConnectionHandler.Initialize(getApplicationContext(), getResources().openRawResource(R.raw.certificate));
+        HttpConnectionHandler.InitializeRXDNS();
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -45,12 +47,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
+
     }
 
     @Override
@@ -69,9 +72,9 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

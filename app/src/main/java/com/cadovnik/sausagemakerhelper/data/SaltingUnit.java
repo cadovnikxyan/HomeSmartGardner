@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.Date;
+import java.util.Random;
 
 public class SaltingUnit implements IDBHelper  {
 
@@ -24,7 +25,7 @@ public class SaltingUnit implements IDBHelper  {
     private boolean with_sodium_ascorbate = false;
     private String sausage_name = "";
     private Date date = new Date();
-    private int id = -1;
+    private long id = -1;
     private long DBTableId;
 
     public SaltingUnit(){
@@ -46,6 +47,7 @@ public class SaltingUnit implements IDBHelper  {
         with_sodium_ascorbate = sodium_ascorbate > 0;
         sausage_name = values.get(DataContract.SaltingUnitDB.COLUMN_SAUSAGE_NAME).toString();
         date = new Date(values.get(DataContract.SaltingUnitDB.COLUMN_DATE).toString());
+        id = values.getAsLong(DataContract.SaltingUnitDB._ID);
     }
 
     public void calculate(){
@@ -70,6 +72,7 @@ public class SaltingUnit implements IDBHelper  {
     @Override
     public ContentValues convert() {
         ContentValues values = new ContentValues();
+        values.put(DataContract.SaltingUnitDB._ID, getId());
         values.put(DataContract.SaltingUnitDB.COLUMN_BRINE_WEIGHT, brine);
         values.put(DataContract.SaltingUnitDB.COLUMN_MEAT_WEIGHT, weight_of_meat);
         values.put(DataContract.SaltingUnitDB.COLUMN_ROCK_SALT_WEIGHT, rock_salt);
@@ -183,20 +186,14 @@ public class SaltingUnit implements IDBHelper  {
         return date;
     }
 
-    public int getId() {
+    public long getId() {
         if ( id == -1 )
-            createId();
-
+            id = new Random().nextInt(Integer.MAX_VALUE) + (1L << 31);
         return id;
     }
 
     @Override
     public void removeRow(SQLiteDatabase db) {
 
-    }
-
-    public void createId(){
-        if (id != -1)
-            id = this.hashCode();
     }
 }

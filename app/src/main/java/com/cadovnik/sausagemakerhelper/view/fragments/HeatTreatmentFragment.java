@@ -1,7 +1,9 @@
 package com.cadovnik.sausagemakerhelper.view.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
@@ -10,26 +12,41 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.cadovnik.sausagemakerhelper.R;
 import com.cadovnik.sausagemakerhelper.http.HttpConnectionHandler;
-import com.cadovnik.sausagemakerhelper.services.HeatingNotification;
+import com.cadovnik.sausagemakerhelper.services.HeatingServiceProvider;
+import com.cadovnik.sausagemakerhelper.services.IntentBuilder;
+import com.cadovnik.sausagemakerhelper.services.ServiceCallback;
 import com.cadovnik.sausagemakerhelper.view.HeatingView;
+import com.cadovnik.sausagemakerhelper.view.MainActivity;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +58,24 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+@IntDef({MODE.MANUAL, MODE.AUTO, MODE.SMOKING})
+@Retention(RetentionPolicy.SOURCE)
+@interface MODE {
+
+    int MANUAL = 0x1000000;
+    int AUTO = 0x2000000;
+    int SMOKING = 0x3000000;
+}
+
+@IntDef({HEATING_STATE.NONE,HEATING_STATE.FRYING, HEATING_STATE.DRYING, HEATING_STATE.BOILING})
+@Retention(RetentionPolicy.SOURCE)
+@interface HEATING_STATE{
+    int NONE = 0x0010000;
+    int DRYING = 0x0020000;
+    int FRYING = 0x0030000;
+    int BOILING = 0x0040000;
+}
+
 @SuppressLint("ValidFragment")
 public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, SwipeRefreshLayout.OnDragListener{
     private final Map<String, Integer> modes = new HashMap();
@@ -51,6 +86,9 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
     private JSONObject currentState = new JSONObject();
     private boolean fromJSONState = false;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private LineChart lineChart;
+    private Timer currentStateTimer;
+    private HeatingServiceProvider provider = null;
     private Callback espGetCurrentStateCallback = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
@@ -64,7 +102,10 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
         public void onResponse(Call call, Response response) throws IOException {
             try {
                 JSONObject jobj = new JSONObject(response.body().string());
-                getActivity().runOnUiThread(() -> {
+                Activity activity = getActivity();
+                if ( activity == null )
+                    return;
+                activity.runOnUiThread(() -> {
                     fromJSONState = true;
                     setCurrentState(jobj);
                     fromJSONState = false;
@@ -113,15 +154,15 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         modes.clear();
-        modes.put(getResources().getString(R.string.heating_heat_mode_manual), 0x1000000);
-        modes.put(getResources().getString(R.string.heating_heat_mode_auto), 0x2000000);
-        modes.put(getResources().getString(R.string.heating_heat_mode_smoking), 0x3000000);
+        modes.put(getResources().getString(R.string.heating_heat_mode_manual), MODE.MANUAL);
+        modes.put(getResources().getString(R.string.heating_heat_mode_auto), MODE.AUTO);
+        modes.put(getResources().getString(R.string.heating_heat_mode_smoking), MODE.SMOKING);
 
         heatingStates.clear();
-        heatingStates.put(0x0010000, getResources().getString(R.string.heating_heat_state_none));
-        heatingStates.put(0x0020000, getResources().getString(R.string.heating_heat_state_drying));
-        heatingStates.put(0x0030000, getResources().getString(R.string.heating_heat_state_frying));
-        heatingStates.put(0x0040000, getResources().getString(R.string.heating_heat_state_boiling));
+        heatingStates.put(HEATING_STATE.NONE, getResources().getString(R.string.heating_heat_state_none));
+        heatingStates.put(HEATING_STATE.DRYING, getResources().getString(R.string.heating_heat_state_drying));
+        heatingStates.put(HEATING_STATE.FRYING, getResources().getString(R.string.heating_heat_state_frying));
+        heatingStates.put(HEATING_STATE.BOILING, getResources().getString(R.string.heating_heat_state_boiling));
     }
 
     @Override
@@ -130,11 +171,9 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.heat_treatment, container, false);
         swipeRefreshLayout = view.findViewById(R.id.swipe_container);
-        HeatingView outsideTemp = view.findViewById(R.id.outside_temp);
-        outsideTemp.setOnClickListener(v -> HeatingNotification.sendNotify(getActivity().getApplicationContext(),"Test outside"));
-        HeatingView probeTemp = view.findViewById(R.id.probe_temp);
-        probeTemp.setOnClickListener(v -> HeatingNotification.sendNotify(getActivity().getApplicationContext(),"Test probe"));
+        lineChart = view.findViewById(R.id.chartSmoking);
 
+        view.findViewById(R.id.start).setOnClickListener(v -> startHeatingProcess());
         ((Switch)view.findViewById(R.id.convectionOnOff)).setOnCheckedChangeListener((buttonView, isChecked) -> {
             try {
                 currentState.remove("convectionState");
@@ -144,10 +183,10 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
                 Log.e(HeatTreatmentFragment.this.getClass().toString(), "JSON ESP: ", e);
             }
         });
-        ((Switch)view.findViewById(R.id.heating)).setOnCheckedChangeListener((buttonView, isChecked) -> {
+        ((Switch)view.findViewById(R.id.smoking_air)).setOnCheckedChangeListener((buttonView, isChecked) -> {
             try {
-                currentState.remove("heatingState");
-                currentState.put("heatingState", isChecked);
+                currentState.remove("airPumpState");
+                currentState.put("airPumpState", isChecked);
                 sendCurrentState();
             } catch (JSONException e) {
                 Log.e(this.getClass().toString(), "JSON ESP: " , e);
@@ -173,59 +212,18 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
         });
 
         if ( !HttpConnectionHandler.getInstance().IsFindedESP()){
-            view.findViewById(R.id.convectionOnOff).setEnabled(false);
-            view.findViewById(R.id.heating).setEnabled(false);
-            view.findViewById(R.id.water).setEnabled(false);
+            setSwitchEnabled(false);
         }
         Timer timerDNS = new Timer();
         timerDNS.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                try{
-                    if ( !HttpConnectionHandler.getInstance().IsFindedESP()){
-                        getActivity().runOnUiThread(() -> {
-                            getView().findViewById(R.id.convectionOnOff).setEnabled(false);
-                            getView().findViewById(R.id.heating).setEnabled(false);
-                            getView().findViewById(R.id.water).setEnabled(false);
-                            getView().findViewById(R.id.ignition).setEnabled(false);
-                        });
-                    }
-                    else{
-                        getActivity().runOnUiThread(() -> {
-                            getView().findViewById(R.id.convectionOnOff).setEnabled(true);
-                            getView().findViewById(R.id.heating).setEnabled(true);
-                            getView().findViewById(R.id.water).setEnabled(true);
-                            getView().findViewById(R.id.ignition).setEnabled(true);
-                            this.cancel();
-                        });
-                    }
-                }catch (NullPointerException e){
-                    Log.e(this.getClass().toString(), "Timer: " , e);
-                }
-
+               checkConnection(timerDNS);
             }
         }, 0, 300);
-        Timer currentStateTimer = new Timer();
-        currentStateTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                try{
-                    if ( HttpConnectionHandler.getInstance().IsFindedESP()){
-                        HttpConnectionHandler.getInstance().getESPRequest("GetCurrentState", espGetCurrentStateCallback);
-                    }
-                    else{
-                        getActivity().runOnUiThread(() -> {
-                            Toast.makeText(getContext(), "Connection to ESP isn`t exists", Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                }catch (NullPointerException e){
-                    Log.e(this.getClass().toString(), "Timer: " , e);
-                }
-            }
-        }, 0, 10000);
-
+        currentStateTimer = new Timer();
         Spinner currentMode = view.findViewById(R.id.currentMode);
-
+        getCurrentState();
         for ( String mode : modes.keySet() )
             modesArray.add(mode);
 
@@ -240,9 +238,17 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
                 Integer modValue = modes.get(currentString);
                 try {
                     currentState.put("mode", modValue);
+                    if (!modValue.equals(MODE.MANUAL)){
+                        getView().findViewById(R.id.convectionOnOff).setEnabled(false);
+                        getView().findViewById(R.id.smoking_air).setEnabled(false);
+                        getView().findViewById(R.id.water).setEnabled(false);
+                    }else{
+                        setSwitchEnabled(true);
+                    }
+
                     sendCurrentState();
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Log.e(this.getClass().toString(), "JSON ESP: " , e);
                 }
             }
 
@@ -253,6 +259,13 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
         });
 
         return view;
+    }
+    private void setSwitchEnabled(boolean state){
+        getView().findViewById(R.id.convectionOnOff).setEnabled(state);
+        getView().findViewById(R.id.smoking_air).setEnabled(state);
+        getView().findViewById(R.id.water).setEnabled(state);
+        getView().findViewById(R.id.ignition).setEnabled(state);
+        getView().findViewById(R.id.start).setEnabled(state);
     }
 
     private void setCurrentState(JSONObject object){
@@ -265,12 +278,16 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
                     currentMode.setSelection(i);
             }
             ((Switch)getView().findViewById(R.id.convectionOnOff)).setChecked(currentState.getBoolean("convectionState"));
-            ((Switch)getView().findViewById(R.id.heating)).setChecked(currentState.getBoolean("heatingState"));
+            ((Switch)getView().findViewById(R.id.smoking_air)).setChecked(currentState.getBoolean("airPumpState"));
             ((Switch)getView().findViewById(R.id.water)).setChecked(currentState.getBoolean("waterPumpState"));
             ((Switch)getView().findViewById(R.id.ignition)).setChecked(currentState.getBoolean("ignitionState"));
-            ((HeatingView)getView().findViewById(R.id.probe_temp)).addTextOnImage(currentState.getString("currentProbeTemp") + " \u2103");
-            ((HeatingView)getView().findViewById(R.id.outside_temp)).addTextOnImage(currentState.getString("currentOutTemp") + " \u2103");
+            ((HeatingView)getView().findViewById(R.id.probe_temp)).addTextOnImage(String.format("%.2f", currentState.getDouble("currentProbeTemp")) + " \u2103");
+            ((HeatingView)getView().findViewById(R.id.outside_temp)).addTextOnImage(String.format("%.2f", currentState.getDouble("currentOutTemp")) + " \u2103");
             ((TextView)getView().findViewById(R.id.currentHeatStatus)).setText(heatingStates.get(currentState.getInt("heatingMode")));
+            ((TextView)getView().findViewById(R.id.start)).setText(currentState.getBoolean("started") ? R.string.stop_heating : R.string.start_heating);
+            if ( currentState.getBoolean("started") ){
+                addDataToChart();
+            }
         }catch (JSONException e){
             Log.e(this.getClass().toString(), "JSON ESP: " , e);
         }catch (NullPointerException e ){
@@ -278,6 +295,158 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
         }
     }
 
+    private void checkConnection(Timer timer){
+        try{
+            if ( !HttpConnectionHandler.getInstance().IsFindedESP()){
+                getActivity().runOnUiThread(() -> setSwitchEnabled(false));
+            }
+            else{
+                getActivity().runOnUiThread(() -> {
+                    setSwitchEnabled(true);
+                    timer.cancel();
+                });
+            }
+        }catch (NullPointerException e){
+            Log.e(this.getClass().toString(), "Timer: " , e);
+        }
+    }
+    private void getCurrentState(){
+        try{
+            if ( HttpConnectionHandler.getInstance().IsFindedESP()){
+                HttpConnectionHandler.getInstance().getESPRequest("GetCurrentState", espGetCurrentStateCallback);
+            }
+            else{
+                getActivity().runOnUiThread(() -> {
+                    Toast.makeText(getContext(), "Connection to ESP isn`t exists", Toast.LENGTH_SHORT).show();
+                });
+            }
+        }catch (NullPointerException e){
+            Log.e(this.getClass().toString(), "Timer: " , e);
+        }
+    }
+
+    private void startHeatingProcess(){
+        try {
+            if ( !currentState.has("started") ){
+                currentState.put("started", false);
+            }
+            if ( provider == null )
+                provider = new HeatingServiceProvider((MainActivity) getActivity());
+
+            if (  !currentState.getBoolean("started") ){
+                ((TextView)getView().findViewById(R.id.start)).setText(R.string.stop_heating);
+                currentState.remove("started");
+                currentState.put("started", true);
+                currentStateTimer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        getCurrentState();
+                    }
+                }, 0, 10000);
+
+                setUpChart();
+                Intent service = new IntentBuilder(getActivity().getApplicationContext()).setCommand(1).setJson(currentState).build();
+
+                provider.serviceBind(service);
+                provider.serviceDataCallback(new ServiceCallback<JSONObject>() {
+                    @Override
+                    public void ReceiveData(JSONObject o) {
+                        fromJSONState = true;
+                        setCurrentState(o);
+                        fromJSONState = false;
+                    }
+                });
+                getActivity().getApplicationContext().startService(service);
+            }else{
+                ((TextView)getView().findViewById(R.id.start)).setText(R.string.start_heating);
+                currentState.remove("started");
+                currentState.put("started", false);
+                provider.serviceUnbind();
+
+            }
+            sendCurrentState();
+
+
+        } catch (JSONException e) {
+            Log.e(this.getClass().toString(), "JSON ESP: " , e);
+        }
+    }
+
+    private void setUpChart(){
+        lineChart.setDragEnabled(true);
+        lineChart.setScaleEnabled(true);
+        lineChart.setDrawGridBackground(false);
+        lineChart.setHighlightPerDragEnabled(true);
+        lineChart.setBackgroundColor(Color.parseColor("#f0f8ff"));
+        lineChart.setViewPortOffsets(0f, 0f, 0f, 0f);
+        lineChart.animateX(1000);
+        lineChart.getDescription().setEnabled(false);
+
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE);
+        xAxis.setTextSize(12f);
+        xAxis.setTextColor(Color.WHITE);
+        xAxis.setDrawAxisLine(false);
+        xAxis.setDrawGridLines(true);
+        xAxis.setTextColor(Color.parseColor("#943a05"));
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setGranularity(0.2f);
+        xAxis.setValueFormatter(new DateFormatter());
+
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        leftAxis.setTextSize(15f);
+        leftAxis.setDrawGridLines(true);
+        leftAxis.setGranularityEnabled(true);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setAxisMaximum(100);
+        leftAxis.setYOffset(-9f);
+        leftAxis.setTextColor(Color.parseColor("#943a05"));
+
+        YAxis rightAxis = lineChart.getAxisRight();
+        rightAxis.setEnabled(false);
+    }
+
+    private void addDataToChart() throws JSONException {
+        double currentProbe = currentState.getDouble("currentProbeTemp");
+        double currentOutTemp = currentState.getDouble("currentOutTemp");
+        LineData lineData = new LineData();
+
+        LineDataSet dataSetProbe = addDataToSet("currentProbeTemp", currentProbe);
+        LineDataSet dataSetOutTemp = addDataToSet("currentOutTemp", currentOutTemp);
+
+        lineData.addDataSet(dataSetProbe);
+        lineData.addDataSet(dataSetOutTemp);
+        lineChart.setData(lineData);
+        lineChart.invalidate();
+    }
+
+    private LineDataSet addDataToSet(String name, double value){
+        List<Entry> entries = new ArrayList<Entry>();
+        LineDataSet dataSet = new LineDataSet(entries, name);
+        entries.add(new Entry((float)Calendar.getInstance().getTimeInMillis(), (float)value));
+        dataSet.setLabel(name);
+        dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        dataSet.setLineWidth(3f);
+        dataSet.setDrawCircles(false);
+        dataSet.setDrawValues(false);
+        dataSet.setFillAlpha(65);
+        if ( name.equals("currentOutTemp")){
+            dataSet.setValueTextColor(Color.parseColor("#f13934"));
+            dataSet.setColor(Color.parseColor("#f13934"));
+            dataSet.setFillColor(Color.parseColor("#f13934"));
+            dataSet.setHighLightColor(Color.parseColor("#f13934"));
+        }else{
+            dataSet.setValueTextColor(Color.parseColor("#001cb2"));
+            dataSet.setColor(Color.parseColor("#001cb2"));
+            dataSet.setFillColor(Color.parseColor("#001cb2"));
+            dataSet.setHighLightColor(Color.parseColor("#001cb2"));
+        }
+        dataSet.setDrawCircleHole(false);
+
+        return dataSet;
+    }
     private void sendCurrentState(){
         if (!fromJSONState)
             HttpConnectionHandler.getInstance().postESPRequest("SetState", currentState.toString(), espSetCurrentStateCallback);
@@ -286,7 +455,13 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        HeatingService.startBackgroundHeatingHandler(getActivity());
+        try {
+            if ( currentState.getBoolean("started")){
+//              HeatingService.startBackgroundHeatingHandler(getActivity());
+            }
+        } catch (JSONException e) {
+            Log.e(this.getClass().toString(), "JSON ESP: " , e);
+        }
     }
 
 
@@ -307,49 +482,18 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
         HttpConnectionHandler.getInstance().getESPRequest("GetCurrentState", espGetCurrentStateCallback);
     }
 
-    public static class HeatTreatmentModeAdapter extends ArrayAdapter<ArrayList> implements AdapterView.OnItemSelectedListener {
+    private class DateFormatter implements IAxisValueFormatter {
 
-        private ArrayList<String> values = new ArrayList<>();
+        private SimpleDateFormat mFormat;
 
-        public HeatTreatmentModeAdapter(Context context, int resource, ArrayList objects) {
-            super(context, resource, objects);
-            values = objects;
-        }
-
-        public void setCurrentItem(String item){
-
+        public DateFormatter() {
+            mFormat = new SimpleDateFormat("HH:mm:ss");
         }
 
         @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-            LinearLayout linearLayout = new LinearLayout(parent.getContext(), null, LinearLayout.VERTICAL );
-            for (String v : values ){
-                TextView view = new TextView(getContext());
-                view.setText(v);
-                view.setEnabled(false);
-                linearLayout.addView(view);
-            }
-            return linearLayout;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
-
-        }
-
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-
-        private class ViewHolder {
-            private TextView text;
+        public String getFormattedValue(float value, AxisBase axis) {
+            String date = mFormat.format(value);
+            return date;
         }
     }
 }

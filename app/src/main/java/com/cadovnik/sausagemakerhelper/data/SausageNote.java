@@ -5,10 +5,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import androidx.annotation.Nullable;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-
-import androidx.annotation.Nullable;
+import java.util.Random;
 
 public class SausageNote implements IDBHelper{
     private String name;
@@ -16,7 +17,7 @@ public class SausageNote implements IDBHelper{
     private HeatingProcess heating;
     private String description= "";
     private Bitmap bitmap;
-    private int id = -1;
+    private long id = -1;
 
     public SausageNote(String name, SaltingUnit salting, @Nullable HeatingProcess heating){
         this.name = name;
@@ -29,7 +30,7 @@ public class SausageNote implements IDBHelper{
         setBitmap(values.getAsByteArray(DataContract.SausageNoteDB.COLUMN_SAUSAGE_IMAGE));
         salting = new SaltingUnit(values);
         heating = new HeatingProcess(values);
-        id = values.getAsInteger(DataContract.SausageNoteDB._ID);
+        id = values.getAsLong(DataContract.SausageNoteDB._ID);
     }
 
     public void setName(String name) {
@@ -80,13 +81,15 @@ public class SausageNote implements IDBHelper{
     }
 
     @Override
-    public int getId() {
+    public long getId() {
+        if (id == -1 )
+            id = new Random().nextInt(Integer.MAX_VALUE) + (1L << 31);
         return id;
     }
 
     @Override
     public void removeRow(SQLiteDatabase db) {
-        int result = db.delete(DataContract.SausageNoteDB.TABLE_NAME,DataContract.SausageNoteDB._ID +"=?", new String[]{String.valueOf(getId())});
+        db.delete(DataContract.SausageNoteDB.TABLE_NAME,DataContract.SausageNoteDB._ID +"=?", new String[]{String.valueOf(getId())});
     }
 
     public Bitmap getBitmap() {

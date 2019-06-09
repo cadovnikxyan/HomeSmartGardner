@@ -61,4 +61,8 @@
     <string name="heating_heat_mode_smoking">Копчение</string>
     <string name="heating_heat_mode_title">Режим:</string>
     <string name="heating_heat_status_title">Статус:</string>
+    <string name="heating_smoking_air_switch">Копчение</string>
+    <string name="settings">Настройки</string>
+    <string name="smokehouse_settings">Настройки коптильни</string>
+    <string name="stop_heating">Стоп</string>
 </resources>
