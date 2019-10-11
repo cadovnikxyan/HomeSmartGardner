@@ -1,13 +1,9 @@
 package com.cadovnik.sausagemakerhelper.view.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.cadovnik.sausagemakerhelper.R;
-import com.google.android.material.card.MaterialCardView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,16 +11,19 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cadovnik.sausagemakerhelper.R;
+import com.google.android.material.card.MaterialCardView;
+
 public class SausageNotesArchiveFragmentPage extends Fragment {
 
     public SausageNotesArchiveFragmentPage(){
-        Log.d(this.getClass().getSimpleName(), "Constructor: ");
+//        Log.d(this.getClass().getSimpleName(), "Constructor: ");
     }
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 //        setRetainInstance(true);
-        Log.d(this.getClass().getSimpleName(), "onCreate: ");
+//        Log.d(this.getClass().getSimpleName(), "onCreate: ");
     }
 
     @Override
@@ -35,7 +34,7 @@ public class SausageNotesArchiveFragmentPage extends Fragment {
         RecyclerView rlay = view.findViewById(R.id.sausage_notes_page);
         rlay.setAdapter(new SausageNotesArchiveFragmentPage.SausageNotesArchiveAdapter());
         rlay.setLayoutManager( new LinearLayoutManager(getActivity()) );
-        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
+//        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
         return view;
     }
 
@@ -43,12 +42,12 @@ public class SausageNotesArchiveFragmentPage extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
-        Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
+//        Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
     }
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(this.getClass().getSimpleName(), "onDestroy: ");
+//        Log.d(this.getClass().getSimpleName(), "onDestroy: ");
     }
 
     public static class SausageNotesArchiveAdapter extends RecyclerView.Adapter<SausageNotesArchiveFragmentPage.SausageNotesArchiveAdapter.ViewHolder> {

@@ -15,8 +15,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.cadovnik.sausagemakerhelper.R;
 import com.cadovnik.sausagemakerhelper.http.HttpConnectionHandler;
-import com.cadovnik.sausagemakerhelper.view.fragments.HeatTreatmentFragment;
-import com.cadovnik.sausagemakerhelper.view.fragments.RefigeratorFragment;
 import com.cadovnik.sausagemakerhelper.view.fragments.SausageMakerFragment;
 import com.cadovnik.sausagemakerhelper.view.fragments.SausageNoteBookFragment;
 import com.cadovnik.sausagemakerhelper.view.fragments.SettingsActivity;
@@ -83,12 +81,8 @@ public class MainActivity extends AppCompatActivity
         //creating fragment object
         Fragment fragment = null;
 
-        if (itemId == R.id.nav_refrigerator) {
-            fragment = RefigeratorFragment.newInstance();
-        } else if (itemId == R.id.sausage_maker) {
+        if (itemId == R.id.sausage_maker) {
             fragment = new SausageMakerFragment();
-        } else if ( itemId == R.id.nav_heat_treatment) {
-            fragment = HeatTreatmentFragment.newInstance();
         } else if ( itemId == R.id.sausage_notebooks){
             fragment = new SausageNoteBookFragment();
         }

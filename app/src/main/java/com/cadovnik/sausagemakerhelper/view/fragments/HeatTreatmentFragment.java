@@ -89,6 +89,7 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
     private LineChart lineChart;
     private Timer currentStateTimer;
     private HeatingServiceProvider provider = null;
+    private LineData lineData = null;
     private Callback espGetCurrentStateCallback = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
@@ -115,7 +116,6 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
                 Log.e(this.getClass().toString(), "JSON ESP: " , e);
             }
             swipeRefreshLayout.setRefreshing(false);
-
         }
     };
 
@@ -245,7 +245,6 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
                     }else{
                         setSwitchEnabled(true);
                     }
-
                     sendCurrentState();
                 } catch (JSONException e) {
                     Log.e(this.getClass().toString(), "JSON ESP: " , e);
@@ -260,6 +259,7 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
 
         return view;
     }
+
     private void setSwitchEnabled(boolean state){
         getView().findViewById(R.id.convectionOnOff).setEnabled(state);
         getView().findViewById(R.id.smoking_air).setEnabled(state);
@@ -299,8 +299,7 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
         try{
             if ( !HttpConnectionHandler.getInstance().IsFindedESP()){
                 getActivity().runOnUiThread(() -> setSwitchEnabled(false));
-            }
-            else{
+            }else{
                 getActivity().runOnUiThread(() -> {
                     setSwitchEnabled(true);
                     timer.cancel();
@@ -348,13 +347,10 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
                 Intent service = new IntentBuilder(getActivity().getApplicationContext()).setCommand(1).setJson(currentState).build();
 
                 provider.serviceBind(service);
-                provider.serviceDataCallback(new ServiceCallback<JSONObject>() {
-                    @Override
-                    public void ReceiveData(JSONObject o) {
-                        fromJSONState = true;
-                        setCurrentState(o);
-                        fromJSONState = false;
-                    }
+                provider.serviceDataCallback((ServiceCallback<JSONObject>) o -> {
+                    fromJSONState = true;
+                    setCurrentState(o);
+                    fromJSONState = false;
                 });
                 getActivity().getApplicationContext().startService(service);
             }else{
@@ -362,6 +358,7 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
                 currentState.remove("started");
                 currentState.put("started", false);
                 provider.serviceUnbind();
+                lineData = null;
 
             }
             sendCurrentState();
@@ -411,7 +408,8 @@ public class HeatTreatmentFragment extends Fragment implements SwipeRefreshLayou
     private void addDataToChart() throws JSONException {
         double currentProbe = currentState.getDouble("currentProbeTemp");
         double currentOutTemp = currentState.getDouble("currentOutTemp");
-        LineData lineData = new LineData();
+        if ( lineData == null )
+            lineData = new LineData();
 
         LineDataSet dataSetProbe = addDataToSet("currentProbeTemp", currentProbe);
         LineDataSet dataSetOutTemp = addDataToSet("currentOutTemp", currentOutTemp);

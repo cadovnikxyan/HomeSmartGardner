@@ -2,13 +2,20 @@ package com.cadovnik.sausagemakerhelper.view.fragments;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.AutoTransition;
+import androidx.transition.TransitionManager;
 
 import com.cadovnik.sausagemakerhelper.R;
 import com.cadovnik.sausagemakerhelper.data.DataController;
@@ -20,26 +27,19 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.transition.AutoTransition;
-import androidx.transition.TransitionManager;
 import ru.rambler.libs.swipe_layout.SwipeLayout;
 
 public class SausageNotesFragmentPage extends Fragment {
     private SausageNotes notes;
 
     public SausageNotesFragmentPage(){
-        Log.d(this.getClass().getSimpleName(), "Constructor: ");
+//        Log.d(this.getClass().getSimpleName(), "Constructor: ");
     }
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         notes = new SausageNotes(getContext());
-        Log.d(this.getClass().getSimpleName(), "onCreate: ");
+//        Log.d(this.getClass().getSimpleName(), "onCreate: ");
     }
 
     @Override
@@ -51,20 +51,20 @@ public class SausageNotesFragmentPage extends Fragment {
         notes = new SausageNotes(getContext());
         rlay.setAdapter(new SausageNotesFragmentPage.SausageNotesAdapter(notes));
         rlay.setLayoutManager( new LinearLayoutManager(getActivity()) );
-        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
+//        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
+//        Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(this.getClass().getSimpleName(), "onDestroy: ");
+//        Log.d(this.getClass().getSimpleName(), "onDestroy: ");
     }
 
     public static class SausageNotesAdapter extends RecyclerView.Adapter<SausageNotesFragmentPage.SausageNotesAdapter.ViewHolder> {

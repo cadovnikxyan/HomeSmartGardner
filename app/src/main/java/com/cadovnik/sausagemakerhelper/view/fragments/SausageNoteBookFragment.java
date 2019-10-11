@@ -2,7 +2,6 @@ package com.cadovnik.sausagemakerhelper.view.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +28,7 @@ public class SausageNoteBookFragment extends Fragment {
         super.onCreate(savedInstanceState);
         tabTitles = new String[] {getResources().getString(R.string.sausage_notes), getResources().getString(R.string.sausage_calendar), getResources().getString(R.string.sausage_archive)};
         adapter = new SausageNoteBookFragmentPagerAdapter(getChildFragmentManager(), getContext());
-        Log.d(this.getClass().getSimpleName(), "onCreate: ");
+//        Log.d(this.getClass().getSimpleName(), "onCreate: ");
     }
 
     @Override
@@ -51,14 +50,14 @@ public class SausageNoteBookFragment extends Fragment {
             ((MainActivity)getActivity()).displaySelectedScreen(R.id.sausage_maker);
         });
 
-        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
+//        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
         return view;
     }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle(R.string.sausage_notes);
-        Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
+//        Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
 
     }
     @Override

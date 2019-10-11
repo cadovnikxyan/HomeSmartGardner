@@ -13,13 +13,9 @@
             android:icon="@drawable/salami"
             android:title="@string/sausage_maker" />
         <item
-            android:id="@+id/nav_refrigerator"
-            android:icon="@drawable/ic_refrigerator"
-            android:title="@string/refrigerator_menu" />
-        <item
-            android:id="@+id/nav_heat_treatment"
-            android:icon="@drawable/ic_smoke_bomb"
-            android:title="@string/heat_treatment" />
+            android:id="@+id/sausage_recepts"
+            android:icon="@drawable/notes"
+            android:title="@string/sausage_recepts"/>
     </group>
 
 </menu>

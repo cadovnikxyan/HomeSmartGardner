@@ -41,7 +41,7 @@
     <string name="current_heating_mode">Current Mode</string>
     <string name="value_sensor">Value:</string>
     <string name="refrigerator_menu">Refrigerator</string>
-    <string name="sausage_notes">Sausage Notes</string>
+    <string name="sausage_notes">Sausage Main</string>
     <string name="sausage_calendar">Calendar</string>
     <string name="sausage_archive">Archive</string>
     <string name="create_sausage">Make sausage</string>
@@ -80,5 +80,6 @@
     <string name="notification_stop_action_text" translatable="false">Stop</string>
     <string name="notification_text_title" translatable="false">Awake is running</string>
     <string name="notification_text_content" translatable="false">Click to open the app</string>
+    <string name="sausage_recepts">Sausage Recepts</string>
 
 </resources>

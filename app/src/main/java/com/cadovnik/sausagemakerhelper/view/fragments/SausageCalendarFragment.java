@@ -6,10 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cadovnik.sausagemakerhelper.R;
-
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.cadovnik.sausagemakerhelper.R;
 
 public class SausageCalendarFragment extends Fragment {
 
@@ -21,7 +21,7 @@ public class SausageCalendarFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 //        setRetainInstance(true);
-        Log.d(this.getClass().getSimpleName(), "onCreate: ");
+//        Log.d(this.getClass().getSimpleName(), "onCreate: ");
     }
 
     @Override
@@ -29,7 +29,7 @@ public class SausageCalendarFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.sausage_calendar, container, false);
-        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
+//        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
         return view;
     }
     @Override
@@ -37,12 +37,12 @@ public class SausageCalendarFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
 //        getActivity().setTitle(R.string.sausage_calendar);
-        Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
+//        Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
     }
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(this.getClass().getSimpleName(), "onDestroy: ");
+//        Log.d(this.getClass().getSimpleName(), "onDestroy: ");
     }
 
 }

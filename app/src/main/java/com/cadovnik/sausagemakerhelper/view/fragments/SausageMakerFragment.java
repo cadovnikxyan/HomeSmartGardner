@@ -179,7 +179,9 @@ public class SausageMakerFragment extends Fragment {
             results.add(new Pair<>(getString(R.string.sausage_sodium_ascorbate), String.valueOf(unit.getSodium_ascorbate())));
         }
 
-        results.add(new Pair<>(getString(R.string.sausage_rock_salt), String.valueOf(unit.getRock_salt())));
+        if ( unit.getRock_salt() != 0 ){
+            results.add(new Pair<>(getString(R.string.sausage_rock_salt), String.valueOf(unit.getRock_salt())));
+        }
         return results;
     }
 
