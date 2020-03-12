@@ -47,7 +47,7 @@ public class SausageNoteBookFragment extends Fragment {
         FloatingActionButton create_sausage = view.findViewById(R.id.create_sausage);
         create_sausage.setOnClickListener(v -> {
             menu.collapse();
-            ((MainActivity)getActivity()).displaySelectedScreen(R.id.sausage_maker);
+            ((MainActivity)getActivity()).displaySelectedScreen(R.id.sausage_calculator);
         });
 
 //        Log.d(this.getClass().getSimpleName(), "onCreateView: ");
@@ -56,7 +56,6 @@ public class SausageNoteBookFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getActivity().setTitle(R.string.sausage_notes);
 //        Log.d(this.getClass().getSimpleName(), "onViewCreated: ");
 
     }

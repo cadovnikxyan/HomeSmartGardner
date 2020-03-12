@@ -38,6 +38,8 @@ public class SausageMakerFragment extends Fragment {
     private SaltingUnit saltingUnit;
     private SausageMakerFragmentAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView result = null;
+    private  View resultLabel = null;
     private String[] sausageOptionsNames;
     public static class InputFilterMinMax implements InputFilter {
 
@@ -78,15 +80,18 @@ public class SausageMakerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = inflater.inflate(R.layout.sausage_maker, container, false);
+        View view = inflater.inflate(R.layout.sausage_calculator, container, false);
         FloatingActionsMenu menu = view.findViewById(R.id.multiple_actions);
         FloatingActionButton calculate = view.findViewById(R.id.salting_calculate);
         TextInputEditText salting = view.findViewById(R.id.salting_percent_value);
         salting.setFilters(new InputFilter[]{new InputFilterMinMax("0", "100")});
         TextInputEditText nitrite_salting = view.findViewById(R.id.nitrite_salt_percent_value);
         nitrite_salting.setFilters(new InputFilter[]{new InputFilterMinMax("0", "100")});
-        RecyclerView result = view.findViewById(R.id.sausage_result);
+        result = view.findViewById(R.id.sausage_result);
         result.setHasFixedSize(true);
+        result.setVisibility(View.INVISIBLE);
+        resultLabel = view.findViewById(R.id.salting_result_header);
+        resultLabel.setVisibility(View.INVISIBLE);
         adapter = new SausageMakerFragment.SausageMakerFragmentAdapter(new ArrayList<>(), new ArrayList<>(), getContext());
         layoutManager = new LinearLayoutManager(getActivity());
         result.setLayoutManager(layoutManager);
@@ -122,6 +127,8 @@ public class SausageMakerFragment extends Fragment {
             saltingUnit.setWith_phosphates(listOptions.get(2).isSelected());
             saltingUnit.setWith_sodium_ascorbate(listOptions.get(3).isSelected());
             saltingUnit.calculate();
+            resultLabel.setVisibility(View.VISIBLE);
+            result.setVisibility(View.VISIBLE);
             adapter.addItems(fillResults(saltingUnit));
             menu.collapse();
 
@@ -160,7 +167,6 @@ public class SausageMakerFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getActivity().setTitle(R.string.sausage_maker);
     }
 
     private List<Pair<String, String>> fillResults(SaltingUnit unit){

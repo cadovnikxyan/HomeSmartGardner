@@ -5,12 +5,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.cadovnik.sausagemakerhelper.R;
@@ -18,40 +15,32 @@ import com.cadovnik.sausagemakerhelper.http.HttpConnectionHandler;
 import com.cadovnik.sausagemakerhelper.view.fragments.SausageMakerFragment;
 import com.cadovnik.sausagemakerhelper.view.fragments.SausageNoteBookFragment;
 import com.cadovnik.sausagemakerhelper.view.fragments.SettingsActivity;
-import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
 
-
+        implements BottomNavigationView.OnNavigationItemSelectedListener {
+    private BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar ,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        bottomNavigationView = findViewById(R.id.nav_view);
         HttpConnectionHandler.Initialize(getApplicationContext(), getResources().openRawResource(R.raw.certificate));
         HttpConnectionHandler.InitializeRXDNS();
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        displaySelectedScreen(R.id.sausage_notebooks);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        bottomNavigationView.setSelectedItemId(R.id.sausage_calculator);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
+        FragmentManager ft = getSupportFragmentManager();
+        if ( ft.getBackStackEntryCount() != 0){
+            ft.popBackStack();
+        }
+        else{
             super.onBackPressed();
         }
-
     }
 
     @Override
@@ -79,23 +68,21 @@ public class MainActivity extends AppCompatActivity
     public void displaySelectedScreen(int itemId) {
 
         //creating fragment object
-        Fragment fragment = null;
-
-        if (itemId == R.id.sausage_maker) {
-            fragment = new SausageMakerFragment();
-        } else if ( itemId == R.id.sausage_notebooks){
-            fragment = new SausageNoteBookFragment();
+        Fragment fragment = getSupportFragmentManager().findFragmentById(itemId);;
+        if ( fragment == null ){
+            if (itemId == R.id.sausage_calculator) {
+                fragment = new SausageMakerFragment();
+            } else if ( itemId == R.id.sausage_notebooks){
+                fragment = new SausageNoteBookFragment();
+            }
         }
-
         //replacing the fragment
         if (fragment != null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.content_frame, fragment);
-            ft.commit();
+            getSupportFragmentManager().beginTransaction()
+            .replace(R.id.content_frame, fragment)
+            .addToBackStack(null)
+            .commit();
         }
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
     }
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

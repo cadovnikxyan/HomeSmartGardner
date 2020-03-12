@@ -6,7 +6,7 @@
     <string name="refrigerator">Холодильник</string>
     <string name="heat_treatment">Термообработка</string>
     <string name="heating_notification_title_template">Нагрев</string>
-    <string name="sausage_maker">Колбасный калькулятор</string>
+    <string name="sausage_maker">Калькулятор</string>
     <string name="salting_calculator">Калькулятор посола</string>
     <string name="weight_meat">Вес мяса</string>
     <string name="salting_percent">Процент солености(%)</string>
@@ -30,7 +30,7 @@
     <string name="current_heating_mode">Текущий режим</string>
     <string name="value_sensor">Значение:</string>
     <string name="refrigerator_menu">Холодильник</string>
-    <string name="sausage_notes">Главная</string>
+    <string name="sausage_notes">Мои колбасы</string>
     <string name="sausage_calendar">Календарь</string>
     <string name="sausage_archive">Архив</string>
     <string name="create_sausage">Создать колбасу</string>
@@ -65,5 +65,5 @@
     <string name="settings">Настройки</string>
     <string name="smokehouse_settings">Настройки коптильни</string>
     <string name="stop_heating">Стоп</string>
-    <string name="sausage_recepts">Рецепты и советы</string>
+    <string name="sausage_recepts">Рецепты</string>
 </resources>

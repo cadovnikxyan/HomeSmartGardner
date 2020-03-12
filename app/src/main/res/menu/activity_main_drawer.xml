@@ -9,7 +9,7 @@
             android:icon="@drawable/notes"
             android:title="@string/sausage_notes" />
         <item
-            android:id="@+id/sausage_maker"
+            android:id="@+id/sausage_calculator"
             android:icon="@drawable/salami"
             android:title="@string/sausage_maker" />
         <item

@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,10 +21,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:baselineAligned="false">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="10"
                 android:textColorHint="@color/colorPrimary"
@@ -58,10 +61,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawablePadding="10dp"
-                    android:drawableLeft="@drawable/meat"
+                    android:drawableStart="@drawable/meat"
                     android:hint="@string/weight_meat"
                     android:inputType="numberSigned"
-                    android:numeric="signed"
                     app:helperText="0" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -81,10 +83,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawablePadding="10dp"
-                    android:drawableLeft="@drawable/rock_salt"
+                    android:drawableStart="@drawable/rock_salt"
                     android:hint="@string/salting_percent"
                     android:inputType="numberDecimal"
-                    android:numeric="decimal"
                     android:text="@string/salting_percent_default"
                     app:helperText="@string/salting_percent_default" />
 
@@ -105,11 +106,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawablePadding="10dp"
-                    android:drawableLeft="@drawable/nitrite_salt"
+                    android:drawableStart="@drawable/nitrite_salt"
                     android:drawableTintMode="src_over"
                     android:hint="@string/nitrite_salt_percent"
                     android:inputType="numberDecimal"
-                    android:numeric="decimal"
                     android:text="@string/nitrite_salt_default"
                     app:helperText="@string/nitrite_salt_default" />
 
@@ -123,7 +123,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/sausage_description"
                     android:drawablePadding="10dp"
-                    android:drawableLeft="@drawable/description"
+                    android:drawableStart="@drawable/description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/sausage_card_description" />
@@ -140,7 +140,6 @@
                 android:id="@+id/sausage_options"
                 android:layout_width="match_parent"
                 android:layout_height="38dp"
-                android:layout_centerHorizontal="true"
                 android:prompt="@string/sausage_options" />
             <TextView
                 android:id="@+id/salting_result_header"
@@ -157,19 +156,18 @@
                 android:layout_height="180dp" />
         </LinearLayout>
     </LinearLayout>
+    </ScrollView>
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/multiple_actions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         app:fab_addButtonColorNormal="@color/colorAccent"
         app:fab_addButtonColorPressed="@color/colorPrimary"
         app:fab_addButtonPlusIconColor="@color/half_black"
         app:fab_labelStyle="@style/menu_labels_style"
         android:layout_marginBottom="16dp"
-        android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp">
 
     <com.getbase.floatingactionbutton.FloatingActionButton

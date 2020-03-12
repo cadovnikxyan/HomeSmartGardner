@@ -14,8 +14,8 @@
     <string name="action_share" translatable="false">Share</string>
     <string name="action_reply" translatable="false">Reply</string>
     <string name="esp_hostname" translatable="false">cadovnik_esp8266.local</string>
-    <string name="sausage_maker">Sausage Calculator</string>
-    <string name="salting_calculator">Salting Calculator</string>
+    <string name="sausage_maker">Calculator</string>
+    <string name="salting_calculator">Calculator</string>
     <string name="weight_meat">Weight of meat</string>
     <string name="salting_percent">Salting percent(%)</string>
     <string name="salting_percent_default" translatable="false">2.2</string>
@@ -41,7 +41,7 @@
     <string name="current_heating_mode">Current Mode</string>
     <string name="value_sensor">Value:</string>
     <string name="refrigerator_menu">Refrigerator</string>
-    <string name="sausage_notes">Sausage Main</string>
+    <string name="sausage_notes">My sausages</string>
     <string name="sausage_calendar">Calendar</string>
     <string name="sausage_archive">Archive</string>
     <string name="create_sausage">Make sausage</string>
@@ -56,7 +56,7 @@
     <string name="sausage_phosphates">Phosphates</string>
     <string name="sausage_sodium_ascorbate">Sodium ascorbate</string>
     <string name="sausage_rock_salt">Rock salt</string>
-    <string name="sausage_options">Sausage options</string>
+    <string name="sausage_options">Options</string>
     <string name="heating_probeTemp">Probe Temperature</string>
     <string name="heating_BoxTemp">Inside Box Temperature</string>
     <string name="heat_waterPump">Water Pump</string>
@@ -80,6 +80,6 @@
     <string name="notification_stop_action_text" translatable="false">Stop</string>
     <string name="notification_text_title" translatable="false">Awake is running</string>
     <string name="notification_text_content" translatable="false">Click to open the app</string>
-    <string name="sausage_recepts">Sausage Recepts</string>
+    <string name="sausage_recepts">Recepts</string>
 
 </resources>
