@@ -21,7 +21,6 @@ public final class DataFactory {
         List<SausageNote> notes = new ArrayList<>();
         Cursor cursorSausageNotes = db.query(DataContract.SausageNoteDB.TABLE_NAME, null, null, null, null, null, null);
         Cursor cursorSalting = db.query(DataContract.SaltingUnitDB.TABLE_NAME, null, null, null, null, null, null);
-//        Cursor cursorHeating = db.query(DataContract.HeatingProcessDB.TABLE_NAME, null, null, null, null, null, null);
         if ( cursorSausageNotes.moveToFirst() && cursorSalting.moveToFirst()){
 
                 Map<String, Integer> indexesSalting = DataContract.SaltingUnitDB.getIndexes(cursorSalting);

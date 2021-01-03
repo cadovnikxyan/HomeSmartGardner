@@ -54,7 +54,6 @@ public class SausageNote implements IDBHelper{
     public ContentValues convert() {
         ContentValues values = new ContentValues();
         values.put(DataContract.SausageNoteDB.COLUMN_SALTING_UNIT, salting.getId());
-        values.put(DataContract.SausageNoteDB.COLUMN_HEATING_PROCESS, -1);
         values.put(DataContract.SausageNoteDB.COLUMN_SAUSAGE_NAME, getName());
         values.put(DataContract.SausageNoteDB.COLUMN_SAUSAGE_DESCRIPTION, getDescription());
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
