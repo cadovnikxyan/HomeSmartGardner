@@ -36,11 +36,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha01'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
-    implementation 'com.squareup.okhttp3:okhttp:4.4.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.getbase:floatingactionbutton:1.10.1'
     implementation 'ru.rambler.android:swipe-layout:1.1.0'
     implementation 'androidx.viewpager:viewpager:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation "com.github.andriydruk:rx2dnssd:0.9.13"
 }

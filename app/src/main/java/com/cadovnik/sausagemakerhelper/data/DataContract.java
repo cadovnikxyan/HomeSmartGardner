@@ -144,6 +144,33 @@ public class DataContract {
         }
     }
 
+    public static final class SaltingExtrasDB implements BaseColumns{
+        public final static String TABLE_NAME = "SaltingExtrasDB";
+        public final static String _ID = BaseColumns._ID;
+        public final static String COLUMN_SALTING_EXTRAS_NAME = "SaltingExtrasName";
+        public final static String COLUMN_SALTING_EXTRAS_APPLICATION_RATE = "SaltingExtrasApplicationRate";
+        public final static String COLUMN_SALTING_EXTRAS_WEIGHT = "SaltingExtrasWeight";
+
+        public final static Map<String,Integer> getIndexes(Cursor cursor){
+            Map<String,Integer> indexes = new HashMap<>();
+            indexes.put(_ID, cursor.getColumnIndex(_ID));
+            indexes.put(COLUMN_SALTING_EXTRAS_NAME, cursor.getColumnIndex(COLUMN_SALTING_EXTRAS_NAME));
+            indexes.put(COLUMN_SALTING_EXTRAS_APPLICATION_RATE, cursor.getColumnIndex(COLUMN_SALTING_EXTRAS_APPLICATION_RATE));
+            indexes.put(COLUMN_SALTING_EXTRAS_WEIGHT, cursor.getColumnIndex(COLUMN_SALTING_EXTRAS_WEIGHT));
+
+            return indexes;
+        }
+
+        public final static String createTableString(){
+            return String.format(CREATE_TABLE_FIRST_LINE, TABLE_NAME)
+                    + String.format(TABLE_COLUMN, _ID, "integer", "primary key") + ","
+                    + String.format(TABLE_COLUMN, COLUMN_SALTING_EXTRAS_NAME, "text", "") + ","
+                    + String.format(TABLE_COLUMN, COLUMN_SALTING_EXTRAS_APPLICATION_RATE, "text", "") + ","
+                    + String.format(TABLE_COLUMN, COLUMN_SALTING_EXTRAS_WEIGHT, "text", "") + ","
+                    + CREATE_TABLE_END_LINE;
+        }
+    }
+
     public static  final class SaltingHistoryDB implements BaseColumns{
         public final static String TABLE_NAME = "SaltingHistoryDB";
         public final static String _ID = BaseColumns._ID;

@@ -12,11 +12,6 @@
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme">
-        <service
-            android:enabled="true"
-            android:icon="@drawable/ic_smoke_bomb"
-            android:name=".services.HeatingService"
-            android:exported="false" />
 
         <activity
             android:name="com.cadovnik.sausagemakerhelper.view.MainActivity"

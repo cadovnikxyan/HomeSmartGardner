@@ -11,7 +11,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.cadovnik.sausagemakerhelper.R;
-import com.cadovnik.sausagemakerhelper.http.HttpConnectionHandler;
 import com.cadovnik.sausagemakerhelper.view.fragments.SausageMakerFragment;
 import com.cadovnik.sausagemakerhelper.view.fragments.SausageNoteBookFragment;
 import com.cadovnik.sausagemakerhelper.view.fragments.SettingsActivity;
@@ -26,8 +25,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bottomNavigationView = findViewById(R.id.nav_view);
-        HttpConnectionHandler.Initialize(getApplicationContext(), getResources().openRawResource(R.raw.certificate));
-        HttpConnectionHandler.InitializeRXDNS();
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.sausage_calculator);
     }

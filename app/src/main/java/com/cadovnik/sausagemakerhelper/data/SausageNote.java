@@ -14,22 +14,19 @@ import java.util.Random;
 public class SausageNote implements IDBHelper{
     private String name;
     private SaltingUnit salting;
-    private HeatingProcess heating;
     private String description= "";
     private Bitmap bitmap;
     private long id = -1;
 
-    public SausageNote(String name, SaltingUnit salting, @Nullable HeatingProcess heating){
+    public SausageNote(String name, SaltingUnit salting){
         this.name = name;
         this.salting = salting;
-        this.heating = heating;
     }
     public SausageNote(ContentValues values){
         name = values.getAsString(DataContract.SausageNoteDB.COLUMN_SAUSAGE_NAME);
         description = values.getAsString(DataContract.SausageNoteDB.COLUMN_SAUSAGE_DESCRIPTION);
         setBitmap(values.getAsByteArray(DataContract.SausageNoteDB.COLUMN_SAUSAGE_IMAGE));
         salting = new SaltingUnit(values);
-        heating = new HeatingProcess(values);
         id = values.getAsLong(DataContract.SausageNoteDB._ID);
     }
 
@@ -43,10 +40,6 @@ public class SausageNote implements IDBHelper{
 
     public SaltingUnit getSalting() {
         return salting;
-    }
-
-    public HeatingProcess getHeating() {
-        return heating;
     }
 
     public String getDescription() {

@@ -17,10 +17,6 @@ public final class DataFactory {
         return  new SaltingUnit();
     }
 
-    public static HeatingProcessUnit RestoreHeatingProcessUnit(SQLiteDatabase db, int id){
-        return new HeatingProcessUnit();
-    }
-
     public static List<SausageNote> RestoreSausageNotes(SQLiteDatabase db){
         List<SausageNote> notes = new ArrayList<>();
         Cursor cursorSausageNotes = db.query(DataContract.SausageNoteDB.TABLE_NAME, null, null, null, null, null, null);

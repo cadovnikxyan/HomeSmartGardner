@@ -12,11 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,6 +30,8 @@ import com.cadovnik.sausagemakerhelper.data.SausageNote;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.textfield.TextInputEditText;
+
+//import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +80,17 @@ public class SausageMakerFragment extends Fragment {
         sausageOptionsNames = new String[]{getString(R.string.sausage_options),getString(R.string.dry_wet_salting), getString(R.string.phosphates), getString(R.string.sodium_ascorbate)};
     }
 
+    public View createExtraSaltingView(LayoutInflater inflater, ViewGroup container, CharSequence hint, int drawableId, Boolean isPersent){
+        ConstraintLayout layout = (ConstraintLayout)inflater.inflate(R.layout.sausage_salting_item, container, false);
+        TextInputEditText view = layout.findViewById(R.id.sausage_extra);
+        view.setHint(hint);
+        view.setCompoundDrawablesRelative( container.getResources().getDrawable(drawableId), null, null, null);
+        if ( isPersent ){
+            view.setFilters(new InputFilter[]{new InputFilterMinMax("0", "100")});
+        }
+        return layout;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -84,7 +99,7 @@ public class SausageMakerFragment extends Fragment {
         FloatingActionsMenu menu = view.findViewById(R.id.multiple_actions);
         FloatingActionButton calculate = view.findViewById(R.id.salting_calculate);
         TextInputEditText salting = view.findViewById(R.id.salting_percent_value);
-        salting.setFilters(new InputFilter[]{new InputFilterMinMax("0", "100")});
+        salting.setFilters(new InputFilter[]{new InputFilterMinMax("0", "3.5")});
         TextInputEditText nitrite_salting = view.findViewById(R.id.nitrite_salt_percent_value);
         nitrite_salting.setFilters(new InputFilter[]{new InputFilterMinMax("0", "100")});
         result = view.findViewById(R.id.sausage_result);
@@ -103,9 +118,9 @@ public class SausageMakerFragment extends Fragment {
 
         ArrayList<SausageOption> listOptions = new ArrayList<>();
 
-        for (int i = 0; i < sausageOptionsNames.length; i++) {
+        for (String sausageOptionsName : sausageOptionsNames) {
             SausageOption option = new SausageOption();
-            option.setTitle(sausageOptionsNames[i]);
+            option.setTitle(sausageOptionsName);
             option.setSelected(false);
             listOptions.add(option);
         }
@@ -137,7 +152,7 @@ public class SausageMakerFragment extends Fragment {
         FloatingActionButton save = view.findViewById(R.id.salting_save);
         save.setOnClickListener( v -> {
             TextInputEditText sausage_name = view.findViewById(R.id.sausage_name);
-            SausageNote note = new SausageNote(sausage_name.getText().toString(), saltingUnit, null);
+            SausageNote note = new SausageNote(sausage_name.getText().toString(), saltingUnit);
             note.setBitmap(BitmapFactory.decodeResource(getResources(),  R.raw.sausage_pic_2));
             TextInputEditText des = view.findViewById(R.id.sausage_description);
             note.setDescription(des.getText().toString());
@@ -194,7 +209,7 @@ public class SausageMakerFragment extends Fragment {
     private double getValue(View view, int id, double defaultValue){
         double result;
         try{
-            result = Double.valueOf(
+            result = Double.parseDouble(
                     ((TextInputEditText)view.findViewById(id)).getText().toString()
             );
         }catch (NumberFormatException e){
@@ -208,20 +223,20 @@ public class SausageMakerFragment extends Fragment {
         private List<Pair<String, String>> saltings;
         private  Context context;
 
-        public SausageMakerFragmentAdapter(List<Pair<String, String>> spices, List<Pair<String, String>> saltings, Context context){
+        SausageMakerFragmentAdapter(List<Pair<String, String>> spices, List<Pair<String, String>> saltings, Context context){
             this.spices = spices;
             this.saltings = saltings;
             this.context = context;
         }
 
-        public void addSpice(Pair<String, String> spice){
+        void addSpice(Pair<String, String> spice){
             spices.add(spice);
             notifyDataSetChanged();
 
         }
         public List<Pair<String, String>> getSpices(){return spices;}
 
-        public void addItems(List<Pair<String, String>>  items){
+        void addItems(List<Pair<String, String>> items){
             saltings = items;
             notifyDataSetChanged();
         }
@@ -253,7 +268,7 @@ public class SausageMakerFragment extends Fragment {
             name.setText(item.first);
             name.setEnabled(isReadOnly);
             name.setCompoundDrawablesWithIntrinsicBounds(context.getResources().getDrawable(SausageMakerFragment.getIconID(item.first, context)),null, null,null);
-            TextInputEditText weight = holder.view.findViewById(R.id.sausage_spice).findViewById(R.id.sausage_spice_weight);
+            TextInputEditText weight = holder.view.findViewById(R.id.sausage_spice_weight);
             String weightValue = String.format(Locale.ENGLISH,"%.2f", Double.valueOf(item.second.isEmpty() ? "0" : item.second));
             weight.setText(weightValue);
             weight.setEnabled(isReadOnly);
@@ -266,30 +281,30 @@ public class SausageMakerFragment extends Fragment {
 
         public static class ViewHolder extends RecyclerView.ViewHolder{
             public View view;
-            public ViewHolder(@NonNull View itemView) {
+            ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 view = itemView;
             }
         }
     }
 
-    public static class SausageOption {
+    static class SausageOption {
         private String title;
         private boolean selected;
 
-        public String getTitle() {
+        String getTitle() {
             return title;
         }
 
-        public void setTitle(String title) {
+        void setTitle(String title) {
             this.title = title;
         }
 
-        public boolean isSelected() {
+        boolean isSelected() {
             return selected;
         }
 
-        public void setSelected(boolean selected) {
+        void setSelected(boolean selected) {
             this.selected = selected;
         }
     }
@@ -298,7 +313,7 @@ public class SausageMakerFragment extends Fragment {
         private ArrayList<SausageOption> listState;
         private boolean isFromView = false;
 
-        public SausageOptionAdapter(Context context, int resource, List<SausageOption> objects) {
+        SausageOptionAdapter(Context context, int resource, List<SausageOption> objects) {
             super(context, resource, objects);
             this.listState = (ArrayList<SausageOption>) objects;
         }
@@ -311,10 +326,9 @@ public class SausageMakerFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
                 return getCustomView(position, convertView, parent);
-
         }
 
-        public View getCustomView(final int position, View convertView, ViewGroup parent) {
+        View getCustomView(final int position, View convertView, ViewGroup parent) {
             final ViewHolder holder;
             if (convertView == null) {
                 LayoutInflater layoutInflator = LayoutInflater.from(parent.getContext());
@@ -347,7 +361,7 @@ public class SausageMakerFragment extends Fragment {
             return convertView;
         }
 
-        private class ViewHolder {
+        private static class ViewHolder {
             private TextView text;
             private CheckBox checkBox;
         }

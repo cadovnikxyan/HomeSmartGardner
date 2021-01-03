@@ -33,17 +33,17 @@ public class SaltingUnit implements IDBHelper  {
     }
 
     public SaltingUnit(ContentValues values){
-        id = Integer.valueOf(values.get(DataContract.SaltingUnitDB._ID).toString());
-        brine = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_BRINE_WEIGHT).toString());
+        id = Integer.parseInt(values.get(DataContract.SaltingUnitDB._ID).toString());
+        brine = Double.parseDouble(values.get(DataContract.SaltingUnitDB.COLUMN_BRINE_WEIGHT).toString());
         wet_salting = brine > 0;
-        weight_of_meat = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_MEAT_WEIGHT).toString());
-        rock_salt = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_ROCK_SALT_WEIGHT).toString());
-        nitrite_salt = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_NITRITE_SALT_WEIGHT).toString());
+        weight_of_meat = Double.parseDouble(values.get(DataContract.SaltingUnitDB.COLUMN_MEAT_WEIGHT).toString());
+        rock_salt = Double.parseDouble(values.get(DataContract.SaltingUnitDB.COLUMN_ROCK_SALT_WEIGHT).toString());
+        nitrite_salt = Double.parseDouble(values.get(DataContract.SaltingUnitDB.COLUMN_NITRITE_SALT_WEIGHT).toString());
         nitrite_salting_percent = nitrite_salt / (weight_of_meat / 100);
         salting_percent = (rock_salt + nitrite_salt ) / (weight_of_meat / 100);
-        phosphates = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_PHOSPHATES_WEIGHT).toString());
+        phosphates = Double.parseDouble(values.get(DataContract.SaltingUnitDB.COLUMN_PHOSPHATES_WEIGHT).toString());
         with_phosphates = phosphates > 0;
-        sodium_ascorbate = Double.valueOf(values.get(DataContract.SaltingUnitDB.COLUMN_SODIUM_ASCORBATE_WEIGHT).toString());
+        sodium_ascorbate = Double.parseDouble(values.get(DataContract.SaltingUnitDB.COLUMN_SODIUM_ASCORBATE_WEIGHT).toString());
         with_sodium_ascorbate = sodium_ascorbate > 0;
         sausage_name = values.get(DataContract.SaltingUnitDB.COLUMN_SAUSAGE_NAME).toString();
         date = new Date(values.get(DataContract.SaltingUnitDB.COLUMN_DATE).toString());

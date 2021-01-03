@@ -19,7 +19,6 @@ import androidx.transition.TransitionManager;
 
 import com.cadovnik.sausagemakerhelper.R;
 import com.cadovnik.sausagemakerhelper.data.DataController;
-import com.cadovnik.sausagemakerhelper.data.HeatingProcess;
 import com.cadovnik.sausagemakerhelper.data.SaltingUnit;
 import com.cadovnik.sausagemakerhelper.data.SausageNotes;
 import com.google.android.material.card.MaterialCardView;
@@ -124,7 +123,6 @@ public class SausageNotesFragmentPage extends Fragment {
             if ( desStr !=null && !desStr.isEmpty() )
                 description.setText(desStr);
             holder.setSaltingInfo(notes.At(position).getSalting());
-            holder.setHeatingInfo(notes.At(position).getHeating());
             Bitmap bitmap = notes.At(position).getBitmap();
             holder.cardView.getViewTreeObserver().addOnGlobalLayoutListener(
                     () -> {
@@ -143,7 +141,6 @@ public class SausageNotesFragmentPage extends Fragment {
             public View view;
             private View extraLayout;
             SaltingUnit saltingUnit;
-            HeatingProcess heatingProcess;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -181,10 +178,6 @@ public class SausageNotesFragmentPage extends Fragment {
 
             public void setSaltingInfo(SaltingUnit salting){
                 this.saltingUnit = salting;
-            }
-
-            public void setHeatingInfo(HeatingProcess process){
-                this.heatingProcess = process;
             }
         }
     }
